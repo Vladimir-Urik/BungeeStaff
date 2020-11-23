@@ -26,7 +26,6 @@ public class JoinListener extends EventListener {
             return;
 
         // 1 ms delay?
-        // User is null if not staff.
         plugin.getProxy().getScheduler().schedule(plugin, () -> {
             user.setOnline(true);
         }, 1, TimeUnit.MILLISECONDS);
@@ -43,16 +42,14 @@ public class JoinListener extends EventListener {
 
             StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
-            if (loopUser == null)
+            if (loopUser == null || !loopUser.isStaffChat())
                 continue;
 
-            if (loopUser.isStaffChat()) {
-                String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
+            String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
 
-                TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Staff-Messages.Staff-Join")
-                        .replace("%player%", player.getName())
-                        .replace("%prefix%", prefix));
-            }
+            TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Staff-Messages.Staff-Join")
+                    .replace("%player%", player.getName())
+                    .replace("%prefix%", prefix));
         }
     }
 }

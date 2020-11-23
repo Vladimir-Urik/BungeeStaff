@@ -91,14 +91,19 @@ public class BungeeStaffPlugin extends Plugin {
             registerCommands(new BroadcastCMD());
 
         if (getConfig().getBoolean("Use-Tab-Completion")) {
-            new TabComplete();
+            new TabCompleteListener(this).register();
         }
 
-        new ChatListener(this).register();
-        new QuitEvent();
-        new JoinListener(this).register();
-        new PingListener();
-        new ConnectionListener(this).register();
+        registerListeners(new ChatListener(this),
+                new QuitListener(this),
+                new JoinListener(this),
+                new ConnectionListener(this));
+    }
+
+    private void registerListeners(EventListener... listeners) {
+        for (EventListener listener : listeners) {
+            listener.register();
+        }
     }
 
     private void registerCommands(Command... commands) {

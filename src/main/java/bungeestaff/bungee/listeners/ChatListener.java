@@ -1,13 +1,12 @@
 package bungeestaff.bungee.listeners;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.Data;
 import bungeestaff.bungee.TextUtil;
+import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 
 public class ChatListener extends EventListener {
@@ -28,7 +27,7 @@ public class ChatListener extends EventListener {
         if (user == null)
             return;
 
-        String rank = user.getRank();
+        Rank rank = user.getRank();
 
         String message = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
                 .replace("%player_server%", player.getServer().getInfo().getName())
@@ -36,31 +35,23 @@ public class ChatListener extends EventListener {
                 .replace("%message%", event.getMessage());
 
         // Send one to console
-        TextUtil.sendMessage(plugin.getProxy().getConsole(), message.replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
+        TextUtil.sendMessage(plugin.getProxy().getConsole(), message
+                .replace("%prefix%", rank == null ? plugin.getConfig().getString("No-Rank") : rank.getPrefix()));
 
         event.setCancelled(true);
 
         for (ProxiedPlayer loopPlayer : ProxyServer.getInstance().getPlayers()) {
 
-            if (!loopPlayer.hasPermission(plugin.getConfig().getString("Custom-Permissions.StaffChat-Notify-Command")) ||
-                    !plugin.getSettings().getBoolean("Settings." + loopPlayer.getUniqueId() + ".Staff-Messages"))
+            StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
+
+            if (loopUser == null)
                 continue;
 
-            if (!Data.prefix.containsKey(player.getName())) {
-                TextUtil.sendMessage(loopPlayer, message.replaceAll("%prefix%", plugin.getConfig().getString("No-Rank")));
+            if (!plugin.hasCustomPermission("StaffChat-Notify-Command") || !loopUser.isStaffChat())
                 continue;
-            }
 
-            //TODO preload
-            Configuration conf = BungeeStaffPlugin.getInstance().getConfig().getSection("Ranks");
-
-            for (String key : conf.getKeys()) {
-                conf.get(key);
-
-                if (conf.getSection(key).getStringList("users").contains(player.getUniqueId().toString())) {
-                    TextUtil.sendMessage(loopPlayer, message.replaceAll("%prefix%", conf.getSection(key).getString("prefix")));
-                }
-            }
+            String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
+            TextUtil.sendMessage(loopPlayer, message.replace("%prefix%", prefix));
         }
     }
 }

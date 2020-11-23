@@ -8,8 +8,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.List;
-
 public class ConnectionListener extends EventListener {
 
     public ConnectionListener(BungeeStaffPlugin plugin) {
@@ -20,38 +18,34 @@ public class ConnectionListener extends EventListener {
     public void onConnect(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        // Maintenance
-        if (plugin.getConfig().getBoolean("Maintenance.Use-Maintenance") &&
-                plugin.getConfig().getBoolean("Maintenance.Enabled") &&
-                !player.hasPermission(plugin.getConfig().getString("Custom-Permissions.Maintenance-Bypass"))) {
-
-            List<String> whitelist = BungeeStaffPlugin.getInstance().getConfig().getStringList("Maintenance.Whitelisted-Players");
-
-            if (!whitelist.contains(player.getName().toLowerCase())) {
-                event.setCancelled(true);
-                String disconnectMessage = plugin.getMessages().getString("Maintenance-Module.Join-Message");
-
-                player.disconnect(TextUtil.format(disconnectMessage.replaceAll("%server%", event.getTarget().getName())
-                        .replaceAll("%NEWLINE%", "\n")));
-            }
-        }
+        StaffUser user = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
         // Switch and join messages
         for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
 
-            if (!player.hasPermission(plugin.getConfig().getString("Custom-Permissions.Server-Switch")) ||
-                    !loopPlayer.hasPermission(plugin.getConfig().getString("Custom-Permissions.Server-Switch-Notify"))) {
+            if (!plugin.hasCustomPermission("Server-Switch", player) || !plugin.hasCustomPermission("Server-Switch-Notify", loopPlayer))
                 continue;
-            }
 
-            if (!BungeeStaffPlugin.getInstance().getSettings().getBoolean("Settings." + loopPlayer.getUniqueId() + ".Staff-Messages")) {
+            StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
+
+            if (loopUser == null || !loopUser.isStaffChat())
                 continue;
-            }
 
-            StaffUser user = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
-
-            if (user != null && user.isOnline()) {
+            if (loopUser.isOnline()) {
                 String targetServer = event.getTarget().getName();
+
+                if (player.getServer() == null) {
+                    TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.First-Join")
+                            .replace("%player%", player.getName())
+                            .replace("%server%", targetServer)
+                            .replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
+                } else {
+                    TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.Switch")
+                            .replace("%player%", player.getName())
+                            .replace("%server_to%", targetServer)
+                            .replace("%server_from%", player.getServer().getInfo().getName())
+                            .replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
+                }
 
                 if (Data.prefix.containsKey(player.getName())) {
                     if (event.getTarget().getPlayers().contains(player)) {
