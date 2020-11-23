@@ -2,6 +2,8 @@ package bungeestaff.bungee;
 
 import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.listeners.*;
+import bungeestaff.bungee.system.cooldown.CooldownManager;
+import bungeestaff.bungee.system.rank.RankManager;
 import bungeestaff.bungee.system.staff.StaffManager;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
@@ -15,34 +17,30 @@ import java.util.List;
 
 public class BungeeStaffPlugin extends Plugin {
 
+    @Getter
     private static BungeeStaffPlugin instance;
 
     private Config config;
     private Config messages;
-    private Config settings;
 
     @Getter
     private StaffManager staffManager;
+    @Getter
+    private RankManager rankManager;
+    @Getter
+    private CooldownManager cooldownManager;
 
     //TODO move
 
     // Staff that has staffchat enabled
-    public ArrayList<ProxiedPlayer> staffChat = new ArrayList<ProxiedPlayer>();
+    public ArrayList<ProxiedPlayer> staffChat = new ArrayList<>();
 
     // Staff that's online?
-    public ArrayList<ProxiedPlayer> staffonline = new ArrayList<ProxiedPlayer>();
+    public ArrayList<ProxiedPlayer> staffonline = new ArrayList<>();
 
     // Some random cooldowns
-    public ArrayList<ProxiedPlayer> requestcooldown = new ArrayList<ProxiedPlayer>();
-    public ArrayList<ProxiedPlayer> reportcooldown = new ArrayList<ProxiedPlayer>();
-
-    //TODO a singleton here? should be always loaded by class loader no?
-    public static BungeeStaffPlugin getInstance() {
-        if (instance == null) {
-            instance = new BungeeStaffPlugin();
-        }
-        return instance;
-    }
+    public ArrayList<ProxiedPlayer> requestcooldown = new ArrayList<>();
+    public ArrayList<ProxiedPlayer> reportcooldown = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -53,12 +51,19 @@ public class BungeeStaffPlugin extends Plugin {
                 "\n&fBungeeStaff &8- (&ev" + getDescription().getVersion() + "&8)" +
                 "\n&8&n------------------------");
 
+        this.config = new Config(this, "config");
+        config.load();
+        this.messages = new Config(this, "messages");
+        messages.load();
+
         this.staffManager = new StaffManager(this);
+        this.rankManager = new RankManager(this);
 
-        config = Config.obtain(this, getProxy().getPluginsFolder() + "/config.yml");
-        messages = Config.obtain(this, getProxy().getPluginsFolder() + "/messages.yml");
-        settings = Config.obtain(this, getProxy().getPluginsFolder() + "/settings.yml");
+        this.cooldownManager = new CooldownManager(this);
 
+        cooldownManager.load();
+
+        rankManager.load();
         staffManager.load();
 
         registerCommands();
@@ -66,6 +71,7 @@ public class BungeeStaffPlugin extends Plugin {
 
     public void onDisable() {
         instance = null;
+        staffManager.save();
     }
 
     private void registerCommands() {
@@ -90,8 +96,8 @@ public class BungeeStaffPlugin extends Plugin {
 
         new ChatListener(this).register();
         new QuitEvent();
-        new JoinEvent();
-        new ProxyPing();
+        new JoinListener(this).register();
+        new PingListener();
         new ConnectionListener(this).register();
     }
 
@@ -101,16 +107,20 @@ public class BungeeStaffPlugin extends Plugin {
         }
     }
 
+    public boolean hasCustomPermission(String key, ProxiedPlayer... players) {
+        for (ProxiedPlayer player : players) {
+            if (!player.hasPermission(getConfig().getString("Custom-Permissions." + key)))
+                return false;
+        }
+        return true;
+    }
+
     public Configuration getMessages() {
         return messages.getConfiguration();
     }
 
     public Configuration getConfig() {
         return config.getConfiguration();
-    }
-
-    public Configuration getSettings() {
-        return settings.getConfiguration();
     }
 
     public List<ProxiedPlayer> getStaffChat() {

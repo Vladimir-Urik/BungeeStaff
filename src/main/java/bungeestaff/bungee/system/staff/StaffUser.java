@@ -1,5 +1,6 @@
 package bungeestaff.bungee.system.staff;
 
+import bungeestaff.bungee.system.rank.Rank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,10 +11,11 @@ public class StaffUser {
     @Getter
     private final UUID uniqueID;
     @Getter
-    private final String name;
+    @Setter
+    private String name;
 
     @Getter
-    private final String rank;
+    private final Rank rank;
 
     @Getter
     @Setter
@@ -22,9 +24,8 @@ public class StaffUser {
     @Setter
     private boolean online;
 
-    public StaffUser(UUID uniqueID, String name, String rank) {
+    public StaffUser(UUID uniqueID, Rank rank) {
         this.uniqueID = uniqueID;
-        this.name = name;
         this.rank = rank;
     }
 }

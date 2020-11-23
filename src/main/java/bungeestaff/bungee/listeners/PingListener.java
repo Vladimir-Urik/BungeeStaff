@@ -7,15 +7,15 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-public class ProxyPing implements Listener {
+public class PingListener extends EventListener {
 
-    public ProxyPing() {
-        ProxyServer.getInstance().getPluginManager().registerListener(BungeeStaffPlugin.getInstance(), this);
+    public PingListener(BungeeStaffPlugin plugin) {
+        super(plugin);
     }
 
     @EventHandler
     public void onPing(ProxyPingEvent e) {
-        if(BungeeStaffPlugin.getInstance().getConfig().getBoolean("Maintenance.Use-Maintenance") == true) {
+        if (BungeeStaffPlugin.getInstance().getConfig().getBoolean("Maintenance.Use-Maintenance") == true) {
             if (BungeeStaffPlugin.getInstance().getConfig().getBoolean("Maintenance.Enabled") == true) {
                 ServerPing serverPing = e.getResponse();
                 ServerPing.Protocol protocol = serverPing.getVersion();

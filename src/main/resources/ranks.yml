@@ -1,0 +1,16 @@
+# Rank configuration for ${project.name}
+#
+# Version: ${project.version}
+
+owner:
+  prefix: '&4'
+
+admin:
+  prefix: '&c'
+
+helper:
+  prefix: '&e'
+
+# Always keep a default.
+default:
+  prefix: '&7'

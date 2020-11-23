@@ -20,7 +20,8 @@ public class CooldownManager {
     }
 
     public void load() {
-        //TODO load cooldowns
+        cooldownCaches.get(CooldownType.REQUEST).setCooldown(plugin.getConfig().getLong("Cooldowns.Request", 60));
+        cooldownCaches.get(CooldownType.REPORT).setCooldown(plugin.getConfig().getLong("Cooldowns.Report", 60));
     }
 
     public boolean triggerCooldown(CooldownType type, UUID uniqueID) {
