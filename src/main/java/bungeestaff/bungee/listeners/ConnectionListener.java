@@ -18,9 +18,10 @@ public class ConnectionListener extends EventListener {
     public void onConnect(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        StaffUser user = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
+        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
 
         // Switch and join messages
+        //TODO rewrite
         for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
 
             if (!plugin.hasCustomPermission("Server-Switch", player) || !plugin.hasCustomPermission("Server-Switch-Notify", loopPlayer))
@@ -33,19 +34,6 @@ public class ConnectionListener extends EventListener {
 
             if (loopUser.isOnline()) {
                 String targetServer = event.getTarget().getName();
-
-                if (player.getServer() == null) {
-                    TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.First-Join")
-                            .replace("%player%", player.getName())
-                            .replace("%server%", targetServer)
-                            .replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
-                } else {
-                    TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.Switch")
-                            .replace("%player%", player.getName())
-                            .replace("%server_to%", targetServer)
-                            .replace("%server_from%", player.getServer().getInfo().getName())
-                            .replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
-                }
 
                 if (Data.prefix.containsKey(player.getName())) {
                     if (event.getTarget().getPlayers().contains(player)) {
