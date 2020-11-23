@@ -1,0 +1,62 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
+archivesBaseName = 'original-BungeeStaff'
+group 'bungeestaff.bungee'
+sourceCompatibility = '8'
+version '3.0.0'
+
+def pluginName = 'BungeeStaff'
+def mainClass = project.property("group") + "." + pluginName + "Plugin"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+
+}
+
+shadowJar {
+    archiveBaseName.set(pluginName)
+    archiveClassifier.set('')
+    archiveVersion.set(project.property("version").toString())
+    relocate('space.devport.utils', project.property("group").toString() + ".utils")
+}
+
+processResources {
+    filter ReplaceTokens, tokens: ["version": version, "name": pluginName, "main_class": mainClass]
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    shadow 'org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT'
+
+    compile 'space.devport.utils:devportutils:3.6.0'
+
+    compile 'com.google.code.gson:gson:2.8.5'
+
+    compile 'org.jetbrains:annotations:19.0.0'
+
+    compileOnly 'me.clip:placeholderapi:2.10.9'
+
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    testCompile 'junit:junit:4.4'
+}
