@@ -76,16 +76,13 @@ public class BungeeStaffPlugin extends Plugin {
 
     private void registerCommands() {
 
-        registerCommands(new CoreCMD(),
+        registerCommands(new CoreCommand(this),
                 new StaffChatCMD(),
                 new RequestCMD(),
                 new ReportCMD(),
                 new ToggleSM(),
                 new StaffFollow(),
                 new StaffList());
-
-        if (getConfig().getBoolean("Maintenance.Use-Maintenance"))
-            registerCommands(new MaintenanceCMD());
 
         if (getConfig().getBoolean("Broadcast.Use-Broadcast"))
             registerCommands(new BroadcastCommand(this));
