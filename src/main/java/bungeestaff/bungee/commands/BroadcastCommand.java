@@ -1,0 +1,42 @@
+package bungeestaff.bungee.commands;
+
+import bungeestaff.bungee.BungeeStaffPlugin;
+import bungeestaff.bungee.TextUtil;
+import bungeestaff.bungee.system.staff.StaffUser;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+public class BroadcastCommand extends CommandBase {
+
+    public BroadcastCommand(BungeeStaffPlugin plugin) {
+        super(plugin, "broadcast", "", "announce");
+        setPermissionKey("Broadcast-Command");
+        setPlayerOnly(true);
+    }
+
+    @Override
+    public void onCommand(CommandSender sender, String[] args) {
+
+        ProxiedPlayer player = (ProxiedPlayer) sender;
+
+        if (args.length == 0) {
+            TextUtil.sendMessage(sender, String.join("\n", plugin.getConfig().getStringList("Broadcast-Module.No-Argument")));
+            return;
+        }
+
+        String message = String.join(" ", args);
+
+        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
+
+        if (user == null)
+            return;
+
+        String format = String.join("\n", plugin.getMessages().getStringList("Broadcast-Module.Message"))
+                .replace("%player%", sender.getName())
+                .replace("%player_server%", player.getServer().getInfo().getName())
+                .replace("%message%", message)
+                .replace("%prefix%", user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix());
+
+        plugin.getProxy().getPlayers().forEach(loopPlayer -> TextUtil.sendMessage(loopPlayer, format));
+    }
+}

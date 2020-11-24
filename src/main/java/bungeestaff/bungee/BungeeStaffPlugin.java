@@ -88,7 +88,7 @@ public class BungeeStaffPlugin extends Plugin {
             registerCommands(new MaintenanceCMD());
 
         if (getConfig().getBoolean("Broadcast.Use-Broadcast"))
-            registerCommands(new BroadcastCMD());
+            registerCommands(new BroadcastCommand(this));
 
         if (getConfig().getBoolean("Use-Tab-Completion")) {
             new TabCompleteListener(this).register();
@@ -112,9 +112,9 @@ public class BungeeStaffPlugin extends Plugin {
         }
     }
 
-    public boolean hasCustomPermission(String key, ProxiedPlayer... players) {
-        for (ProxiedPlayer player : players) {
-            if (!player.hasPermission(getConfig().getString("Custom-Permissions." + key)))
+    public boolean hasCustomPermission(String key, CommandSender... senders) {
+        for (CommandSender sender : senders) {
+            if (!sender.hasPermission(getConfig().getString("Custom-Permissions." + key)))
                 return false;
         }
         return true;
