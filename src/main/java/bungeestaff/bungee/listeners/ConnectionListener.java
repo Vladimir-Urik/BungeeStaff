@@ -1,9 +1,9 @@
 package bungeestaff.bungee.listeners;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.Data;
 import bungeestaff.bungee.TextUtil;
 import bungeestaff.bungee.system.staff.StaffUser;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.event.EventHandler;
@@ -20,8 +20,10 @@ public class ConnectionListener extends EventListener {
 
         StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
 
+        if (user == null)
+            return;
+
         // Switch and join messages
-        //TODO rewrite
         for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
 
             if (!plugin.hasCustomPermission("Server-Switch", player) || !plugin.hasCustomPermission("Server-Switch-Notify", loopPlayer))
@@ -32,41 +34,25 @@ public class ConnectionListener extends EventListener {
             if (loopUser == null || !loopUser.isStaffChat())
                 continue;
 
-            if (loopUser.isOnline()) {
-                String targetServer = event.getTarget().getName();
+            String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
 
-                if (Data.prefix.containsKey(player.getName())) {
-                    if (event.getTarget().getPlayers().contains(player)) {
-                        return;
-                    } else {
-                        String rank = Data.onlinestaff.get(player.getName());
-                        if (player.getServer() == null) {
-                            TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.First-Join")
-                                    .replace("%player%", player.getName())
-                                    .replace("%server%", targetServer)
-                                    .replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
-                        } else {
-                            TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.Switch")
-                                    .replace("%player%", player.getName())
-                                    .replace("%server_to%", targetServer)
-                                    .replace("%server_from%", player.getServer().getInfo().getName())
-                                    .replace("%prefix%", plugin.getConfig().getString("Ranks." + rank + ".prefix")));
-                        }
-                    }
-                }
+            ServerInfo targetServer = event.getTarget();
+
+            // Why a return when he's already online..? some kind of back check?
+            if (targetServer.getPlayers().contains(player))
+                return;
+
+            if (player.getServer() == null) {
+                TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.First-Join")
+                        .replace("%player%", player.getName())
+                        .replace("%server%", targetServer.getName())
+                        .replace("%prefix%", prefix));
             } else {
-                if (player.getServer() == null) {
-                    TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.First-Join")
-                            .replace("%player%", player.getName())
-                            .replace("%server%", event.getTarget().getName())
-                            .replace("%prefix%", plugin.getConfig().getString("No-Rank")));
-                } else {
-                    TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.Switch")
-                            .replace("%player%", player.getName())
-                            .replace("%server_to%", event.getTarget().getName())
-                            .replace("%server_from%", player.getServer().getInfo().getName())
-                            .replace("%prefix%", plugin.getConfig().getString("No-Rank")));
-                }
+                TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.Switch")
+                        .replace("%player%", player.getName())
+                        .replace("%server_to%", targetServer.getName())
+                        .replace("%server_from%", player.getServer().getInfo().getName())
+                        .replace("%prefix%", prefix));
             }
         }
     }

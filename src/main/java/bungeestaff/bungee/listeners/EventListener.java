@@ -3,7 +3,7 @@ package bungeestaff.bungee.listeners;
 import bungeestaff.bungee.BungeeStaffPlugin;
 import net.md_5.bungee.api.plugin.Listener;
 
-public class EventListener implements Listener {
+public abstract class EventListener implements Listener {
 
     protected final BungeeStaffPlugin plugin;
 

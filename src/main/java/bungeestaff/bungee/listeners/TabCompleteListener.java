@@ -22,8 +22,10 @@ public class TabCompleteListener extends EventListener {
 
         partialName = cursor.lastIndexOf(32) >= 0 ? cursor.substring(cursor.lastIndexOf(32) + 1) : cursor;
 
-        for (ProxiedPlayer player : plugin.getProxy().getPlayers())
-            if ((player.getName().toLowerCase().startsWith(partialName)) && (!event.getSuggestions().contains(player.getName())))
-                event.getSuggestions().add(player.getName());
+        for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
+            String playerName = player.getName();
+            if (playerName.toLowerCase().startsWith(partialName) && !event.getSuggestions().contains(playerName))
+                event.getSuggestions().add(playerName);
+        }
     }
 }
