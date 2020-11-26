@@ -1,7 +1,6 @@
 package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.TextUtil;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.CommandSender;
@@ -28,12 +27,12 @@ public class BroadcastCommand extends CommandBase {
         if (user == null)
             return;
 
-        String format = String.join("\n", plugin.getMessages().getStringList("Broadcast-Module.Message"))
+        String format = plugin.getListMessage("Broadcast-Module.Message")
                 .replace("%player%", sender.getName())
                 .replace("%player_server%", player.getServer().getInfo().getName())
                 .replace("%message%", message)
                 .replace("%prefix%", user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix());
 
-        plugin.getProxy().getPlayers().forEach(loopPlayer -> TextUtil.sendMessage(loopPlayer, format));
+        plugin.sendMessage(format, plugin.getProxy().getPlayers());
     }
 }

@@ -51,4 +51,8 @@ public class CooldownCache {
     public void removeCooldown(UUID uniqueID) {
         this.cooldowns.remove(uniqueID);
     }
+
+    public long getRemaining(UUID uniqueID) {
+        return this.cooldowns.containsKey(uniqueID) ? this.cooldowns.get(uniqueID) : 0;
+    }
 }

@@ -14,6 +14,7 @@ import net.md_5.bungee.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class BungeeStaffPlugin extends Plugin {
@@ -93,7 +94,7 @@ public class BungeeStaffPlugin extends Plugin {
         registerCommands(new CoreCommand(this),
                 new StaffChatCMD(),
                 new RequestCMD(),
-                new ReportCMD(),
+                new ReportCommand(this),
                 new ToggleSM(),
                 new StaffFollow(),
                 new StaffList());
@@ -129,6 +130,10 @@ public class BungeeStaffPlugin extends Plugin {
                 return false;
         }
         return true;
+    }
+
+    public void sendMessage(String message, Collection<ProxiedPlayer> players) {
+        players.forEach(p -> TextUtil.sendMessage(p, message));
     }
 
     public void sendMessage(String message, CommandSender... senders) {

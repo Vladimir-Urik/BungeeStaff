@@ -24,6 +24,10 @@ public class CooldownManager {
         cooldownCaches.get(CooldownType.REPORT).setCooldown(plugin.getConfig().getLong("Cooldowns.Report", 60));
     }
 
+    public long getRemaining(CooldownType type, UUID uniqueID) {
+        return this.cooldownCaches.get(type).getRemaining(uniqueID);
+    }
+
     public boolean triggerCooldown(CooldownType type, UUID uniqueID) {
         return this.cooldownCaches.get(type).triggerCooldown(uniqueID);
     }
