@@ -6,7 +6,9 @@ import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class RankManager {
 
@@ -43,5 +45,9 @@ public class RankManager {
 
     public Rank getRank(String name) {
         return this.ranks.get(name);
+    }
+
+    public Set<Rank> getRanks() {
+        return new HashSet<>(this.ranks.values());
     }
 }

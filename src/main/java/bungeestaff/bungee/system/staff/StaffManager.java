@@ -7,9 +7,9 @@ import bungeestaff.bungee.system.rank.Rank;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class StaffManager {
 
@@ -79,5 +79,15 @@ public class StaffManager {
         return this.users.values().stream()
                 .filter(u -> u.getName().equals(name))
                 .findAny().orElse(null);
+    }
+
+    public Set<StaffUser> getUsers() {
+        return new HashSet<>(this.users.values());
+    }
+
+    public Set<StaffUser> getUsers(Predicate<StaffUser> condition) {
+        return this.users.values().stream()
+                .filter(condition)
+                .collect(Collectors.toSet());
     }
 }

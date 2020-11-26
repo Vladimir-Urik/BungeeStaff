@@ -13,6 +13,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BungeeStaffPlugin extends Plugin {
@@ -69,6 +70,19 @@ public class BungeeStaffPlugin extends Plugin {
         registerCommands();
     }
 
+    public void reload(CommandSender sender) {
+        long start = System.currentTimeMillis();
+
+        config.load();
+        messages.load();
+
+        rankManager.load();
+        staffManager.load();
+
+        TextUtil.sendMessage(sender, getMessages().getString("BungeeStaff-Module.Reload")
+                .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));
+    }
+
     public void onDisable() {
         instance = null;
         staffManager.save();
@@ -115,6 +129,28 @@ public class BungeeStaffPlugin extends Plugin {
                 return false;
         }
         return true;
+    }
+
+    public void sendMessage(String message, CommandSender... senders) {
+        Arrays.stream(senders).forEach(sender -> TextUtil.sendMessage(sender, message));
+    }
+
+    public String getLineMessage(String key) {
+        return TextUtil.color(getMessages().getString(key));
+    }
+
+    public void sendLineMessage(String key, CommandSender... senders) {
+        String message = getLineMessage(key);
+        sendMessage(message, senders);
+    }
+
+    public String getListMessage(String key) {
+        return String.join("\n", getMessages().getStringList(key));
+    }
+
+    public void sendListMessage(String key, CommandSender... senders) {
+        String message = getListMessage(key);
+        sendMessage(message, senders);
     }
 
     public Configuration getMessages() {

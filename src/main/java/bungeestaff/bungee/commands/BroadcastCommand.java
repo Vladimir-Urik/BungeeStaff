@@ -2,6 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.TextUtil;
+import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -12,17 +13,13 @@ public class BroadcastCommand extends CommandBase {
         super(plugin, "broadcast", "", "announce");
         setPermissionKey("Broadcast-Command");
         setPlayerOnly(true);
+        setRange(1, -1);
     }
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
-
-        if (args.length == 0) {
-            TextUtil.sendMessage(sender, String.join("\n", plugin.getConfig().getStringList("Broadcast-Module.No-Argument")));
-            return;
-        }
 
         String message = String.join(" ", args);
 

@@ -20,34 +20,13 @@ BungeeStaff-Module:
       - '&cUsage: /bungeestaff <help>'
 
 Group-Module:
-  Group-Created: '&e&l* &7Group &b%group% &7created!'
-  Group-Deleted: '&e&l* &7Group &b%group% &7deleted!'
-  Group-Not-Found: '&e&l* &7Group &b%group% &7does not exist!'
-  Group-Found: '&e&l* &7Group &b%group% &7already exists!'
-  Group-Prefix: '&e&l* &6%group%''s &7prefix: %prefix%Notch'
-  Group-Set-Prefix: '&e&l* &7You''ve set &6%group%''s &7prefix to: %prefix%BestPluginEvar'
   Player-Not-Found: '&e&l* &cPlayer not found'
-  Player-Group-Add: '&e&l* &7You set &b%player%''s &7group to &b%group%&7!'
-  Player-Group-Remove: '&e&l* &7Group &b%group% &7has been remove from &c%player%!'
-  Player-Group-Exists: '&e&l* &b%player% &7is already a member of this group!'
-  Player-Group-Not-Exist: '&e&l* &b%player% &7is not a member in this group!'
-  Player-Group-Search: '&e&l* &b%player% &7is in the rank &b&l%rank% &8| %prefix%%player%'
-  Player-Group-Search-Null: '&e&l* &b%player% &7is not in a group!'
-  Group-List:
-    - '&6&lAvailable Groups:'
-    - '&c%groups%'
   No-Argument:
     - '&cToo few arguments'
     - '&cUsage: /bungeestaff group <help>'
   Help:
     - '&a&lBungeeStaff Group Help:'
-    - '&2/bungeestaff group add <Player> <Group> &8- &7Add a player to specified group!'
-    - '&2/bungeestaff group remove <Player> <Group> &8- &7Remove a player to specified group!'
-    - '&2/bungeestaff group create <Group> &8- &7Create a group!'
-    - '&2/bungeestaff group delete <Group> &8- &7Delete a group!'
-    - '&2/bungeestaff group setprefix <Group> <Prefix> &8- &7Set a group prefix'
-    - '&2/bungeestaff group list &8- &7List available groups!'
-    - '&2/bungeestaff group search <Player> &8- &7Search for a player''s group!'
+    - '&2/bungeestaff list &8- &7List groups and players.'
 
 Maintenance-Module:
   ServerList: '&eMaintenance Mode'
