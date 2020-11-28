@@ -34,21 +34,33 @@ public class Config {
 
         String finalName = name.contains(".yml") ? name : name.concat(".yml");
         this.name = finalName;
-        this.file = new File(plugin.getDataFolder() + "/" + finalName);
+        this.file = new File(plugin.getDataFolder(), finalName);
 
         this.configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
     }
 
     public void load() {
-        if (!file.exists())
+
+        if (!file.exists()) {
+
+            if (!file.getParentFile().mkdirs())
+                plugin.getProxy().getLogger().severe("Could not create folder structure for " + name + "(" + file.getPath() + ")");
+
             try {
                 InputStream in = plugin.getResourceAsStream(name);
                 Files.copy(in, file.toPath());
-
-                configuration = configurationProvider.load(file);
             } catch (IOException e) {
+                plugin.getProxy().getLogger().severe("Could not create file " + name);
                 e.printStackTrace();
             }
+        }
+
+        try {
+            configuration = configurationProvider.load(file);
+        } catch (IOException e) {
+            plugin.getProxy().getLogger().severe("Could not load " + name);
+            e.printStackTrace();
+        }
     }
 
     public void delete() {
