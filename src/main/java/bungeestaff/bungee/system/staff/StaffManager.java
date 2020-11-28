@@ -43,8 +43,10 @@ public class StaffManager {
 
             Rank rank = plugin.getRankManager().getRank(rankName);
 
-            if (rank == null)
-                ProxyServer.getInstance().getLogger().warning("Rank " + rankName + " of " + name + " does no longer exist.");
+            if (rank == null) {
+                rank = plugin.getRankManager().getRank("default");
+                ProxyServer.getInstance().getLogger().warning("Rank " + rankName + " of " + name + " does no longer exist. Using the default rank.");
+            }
 
             StaffUser user = new StaffUser(uniqueID, rank);
 
