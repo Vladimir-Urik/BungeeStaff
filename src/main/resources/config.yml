@@ -8,7 +8,6 @@ Custom-Permissions:
   Staff-Join: 'bstaff.staff.join'
   Staff-Leave: 'bstaff.staff.leave'
   StaffChat-Command: 'bstaff.staffchat'
-  StaffChat-Notify-Command: 'bstaff.staffchat.notify'
   Request-Notify: 'bstaff.request.notify'
   Report-Notify: 'bstaff.report.notify'
   Staff-Follow: 'bstaff.follow'
@@ -27,7 +26,7 @@ Broadcast:
   Use-Broadcast: true
 
 Defaults:
-  staff-messages: true
+  Staff-Messages: true
 
 # Prefix to use, when there's none defined for the player.
 # ( this is only used if you delete the default rank against my notes ;) )

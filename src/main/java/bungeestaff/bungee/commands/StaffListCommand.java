@@ -1,9 +1,9 @@
 package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.util.TextUtil;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
 
 import java.util.Set;
@@ -23,12 +23,14 @@ public class StaffListCommand extends CommandBase {
 
         for (StaffUser user : onlineStaff) {
             String line = plugin.getLineMessage("Staff-List.List")
+                    .replace("%rank%", user.getRank().getName())
+                    .replace("%player%", user.getName())
                     .replace("%prefix%", plugin.getPrefix(user.getUniqueID()))
                     .replace("%server%", user.asPlayer().getServer().getInfo().getName());
-            header.append(line);
+            header.append("\n").append(line);
         }
 
-        header.append(plugin.getListMessage("Staff-List.Footer"));
+        header.append("\n").append(plugin.getListMessage("Staff-List.Footer"));
 
         TextUtil.sendMessage(sender, header.toString()
                 .replace("%online_staff%", String.valueOf(onlineStaff.size())));

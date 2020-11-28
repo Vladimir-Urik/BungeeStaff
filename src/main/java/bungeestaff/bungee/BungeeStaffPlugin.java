@@ -70,7 +70,6 @@ public class BungeeStaffPlugin extends Plugin {
         messages.load();
 
         rankManager.load();
-        staffManager.load();
 
         TextUtil.sendMessage(sender, getMessages().getString("BungeeStaff-Module.Reload")
                 .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));

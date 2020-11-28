@@ -4,6 +4,7 @@ import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
+import bungeestaff.bungee.util.TextUtil;
 import com.google.common.base.Strings;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -124,5 +125,34 @@ public class StaffManager {
         return this.users.values().stream()
                 .filter(condition)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Send message to online staff.
+     */
+    public void sendRawStaffMessage(String message) {
+        // Send one to console
+        TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
+
+        // To players online
+        getUsers(u -> u.isOnline() && u.isStaffMessages()).forEach(u -> TextUtil.sendMessage(u.asPlayer(), message));
+    }
+
+    /**
+     * Format and send a message to staff chat.
+     */
+    public void sendStaffMessage(StaffUser author, String message) {
+
+        ProxiedPlayer player = author.asPlayer();
+
+        String prefix = plugin.getPrefix(player);
+
+        String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
+                .replace("%server%", player.getServer().getInfo().getName())
+                .replace("%player%", player.getName())
+                .replace("%message%", message)
+                .replace("%prefix%", prefix);
+
+        sendRawStaffMessage(wholeMessage);
     }
 }

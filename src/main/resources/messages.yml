@@ -31,8 +31,8 @@ BungeeStaff-Module:
     - '&2/stafflist(slist) &8- &7View all online staff members!'
     - '&2/broadcast(announce) &8- &7Broadcast an announcement!'
   No-Such-Argument:
-      - '&cIncorrect usage'
-      - '&cUsage: /bungeestaff <help>'
+    - '&cIncorrect usage'
+    - '&cUsage: /bungeestaff <help>'
   User-Added: '&7User added.'
   User-Removed: '&7User removed.'
 
@@ -45,41 +45,6 @@ Group-Module:
     - '&a&lBungeeStaff Group Help:'
     - '&2/bungeestaff list &8- &7List groups and players.'
 
-Maintenance-Module:
-  ServerList: '&eMaintenance Mode'
-  Player-Already-Whitelisted: '&b&l* &7User &3%arg% &7is already whitelisted!'
-  Player-Not-Whitelisted: '&b&l* &7User &3%arg% &7is not whitelisted!'
-  Player-Add-Whitelist: '&b&l* &7User &3%arg% &7has been added to the whitelist!'
-  Player-Remove-Whitelist: '&b&l* &7User &3%arg% &7has been removed from the whitelist!'
-  Already-Enabled: '&7Maintenance mode is already enabled'
-  Already-Disabled: '&7Maintenance mode is already disabled'
-  Join-Message: '&cKicked whilst connecting to: &b%server% %NEWLINE% &cServer is currently in maintenance mode %NEWLINE%&f %NEWLINE%&cJoin back in a few minutes!'
-  Online-Kick: '&cMaintenance mode has been &aenabled %NEWLINE%&f %NEWLINE% &dJoin back in a few minutes'
-  M-On:
-    Broadcast-Staff: true
-    Message: '&b%player% &7has enabled maintenance mode!'
-  M-Off:
-    Broadcast-Staff: true
-    Message: '&b%player% &7has disabled maintenance mode!'
-  No-Argument:
-    - '&cToo few arguments'
-    - '&cUsage: /maintenance <help>'
-  List:
-    - '&8&m-----------------------------'
-    - '&3Whitelisted Players:'
-    - '&b%players%'
-    - '&8&m-----------------------------'
-  Help:
-    - '&a&lMaintenance Help:'
-    - '&2/maintenance on &8- &7Turn maintenance mode on'
-    - '&2/maintenance off &8- &7Turn maintenance mode off'
-    - '&2/maintenance add <Player> &8- &7Add a player to maintenance mode'
-    - '&2/maintenance remove <Player> &8- &7Remove a player from maintenance mode'
-    - '&2/maintenance list &8- &7List whitelisted players'
-  No-Such-Argument:
-      - '&cIncorrect usage'
-      - '&cUsage: /maintenance <help>'
-
 Report-Module:
   No-Argument:
     - '&cToo few arguments'
@@ -88,8 +53,8 @@ Report-Module:
   Player-Sender: '&cYou cannot report yourself you silly goose ;)'
   Report-Sent: '&cThanks for reporting! This report has been sent to all online staff!'
   Report-Cooldown: 5
-# Available presets
-# MINUTES, SECONDS, HOURS, DAYS
+  # Available presets
+  # MINUTES, SECONDS, HOURS, DAYS
   Report-Cooldown-Type: minutes
   Report-Cooldown-Message: '&cYou can only use this command once every &4%amount% %type%'
   Report-Broadcast:
@@ -97,7 +62,7 @@ Report-Module:
     - '    &9Reason:&7 %reason%'
   Report-Clickable: true
   Hover-Message: '&7Click to join &b%reported%''s &7server &e(%reported_server%)'
-## Customizable command!
+  ## Customizable command!
   JSONClick-Command: '/bstafffollow %reported%'
 
 Staff-Follow:
@@ -113,8 +78,8 @@ Request-Module:
     - '&cUsage: /request <Reason>'
   Request-Sent: '&cRequest sent'
   Request-Cooldown: 4
-# Available presets
-# MINUTES, SECONDS, HOURS, DAYS
+  # Available presets
+  # MINUTES, SECONDS, HOURS, DAYS
   Request-Cooldown-Type: minutes
   Request-Cooldown-Message: '&cYou can only use this command once every &4%amount% %type%'
   Request-Broadcast:
@@ -124,7 +89,8 @@ Request-Module:
 StaffChat-Module:
   StaffChat-Enabled: '&7Staff chat has been &aenabled'
   StaffChat-Disabled: '&7Staff chat has been &cdisabled'
-  StaffChat-Message: '&8(&2%player_server%&8) %prefix%%player%:&a %message%'
+  # %rank%, %prefix%, %player%, %server%, %message%
+  StaffChat-Message: '&8(&b%server%&8) &f%player% &3> &7%message%'
 
 Staff-Messages:
   Staff-Join: '&9[Staff] %prefix%&b%player% has joined the network!'
@@ -133,14 +99,15 @@ Staff-Messages:
   Staff-Messages-Off: '&7You can &cno longer &7see staff messages'
 
 Staff-List:
-  List: '%prefix%%player% &8-&b %player_server%'
+  # %prefix%, %rank%, %server%, %player%
+  List: '&8 - &b%player% &7(&f%rank%&7) &7on &e%server%'
   Header:
-    - '&8&m-----------------------------'
-    - '&6&lOnline Staff:&e %online_staff%'
+    - '&8&m                             '
+    - '&7Count: &f%online_staff%'
     - ''
-    - '&cStaff Online:'
+    - '&7Staff:'
   Footer:
-    - '&8&m-----------------------------'
+    - '&8&m                             '
 
 Broadcast-Module:
   No-Argument:
