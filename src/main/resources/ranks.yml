@@ -1,6 +1,6 @@
-# Rank configuration for ${project.name}
+# Rank configuration for @name@
 #
-# Version: ${project.version}
+# Version: @version@
 
 owner:
   prefix: '&4'

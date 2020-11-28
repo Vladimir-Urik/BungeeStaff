@@ -1,0 +1,4 @@
+name: @name@
+main: @main_class@
+version: @version@
+author: qwz

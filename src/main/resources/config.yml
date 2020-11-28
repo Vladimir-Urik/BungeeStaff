@@ -1,6 +1,6 @@
-# Configuration for ${project.name}
+# Configuration for @name@
 #
-# Version: ${project.version}
+# Version: @version@
 
 Custom-Permissions:
   Core-Command: 'bstaff.core'
