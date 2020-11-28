@@ -2,8 +2,6 @@
 #
 # Version: ${project.version}
 
-Version: ${project.version}
-
 Custom-Permissions:
   Core-Command: 'bstaff.core'
   Toggle-Staff-Messages: 'bstaff.togglestaffmessages'
@@ -27,5 +25,3 @@ Cooldowns:
 
 Broadcast:
   Use-Broadcast: true
-
-No-Rank: '&9&l[NULL] &7'

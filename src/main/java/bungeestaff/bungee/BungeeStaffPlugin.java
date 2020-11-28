@@ -1,7 +1,6 @@
 package bungeestaff.bungee;
 
 import bungeestaff.bungee.commands.*;
-import bungeestaff.bungee.listeners.EventListener;
 import bungeestaff.bungee.listeners.*;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
@@ -16,7 +15,9 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.UUID;
 
 public class BungeeStaffPlugin extends Plugin {
 
@@ -32,18 +33,6 @@ public class BungeeStaffPlugin extends Plugin {
     private RankManager rankManager;
     @Getter
     private CooldownManager cooldownManager;
-
-    //TODO move
-
-    // Staff that has staffchat enabled
-    public ArrayList<ProxiedPlayer> staffChat = new ArrayList<>();
-
-    // Staff that's online?
-    public ArrayList<ProxiedPlayer> staffonline = new ArrayList<>();
-
-    // Some random cooldowns
-    public ArrayList<ProxiedPlayer> requestcooldown = new ArrayList<>();
-    public ArrayList<ProxiedPlayer> reportcooldown = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -177,9 +166,5 @@ public class BungeeStaffPlugin extends Plugin {
 
     public Configuration getConfig() {
         return config.getConfiguration();
-    }
-
-    public List<ProxiedPlayer> getStaffChat() {
-        return staffChat;
     }
 }

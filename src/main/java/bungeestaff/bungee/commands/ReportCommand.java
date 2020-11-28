@@ -54,7 +54,7 @@ public class ReportCommand extends CommandBase {
 
             StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
-            if (loopUser == null || !loopUser.isOnline() || !loopUser.isStaffChat())
+            if (loopUser == null || !loopUser.isOnline() || !loopUser.isStaffMessages())
                 continue;
 
             String broadcast = plugin.getListMessage("Report-Module.Report-Broadcast");

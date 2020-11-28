@@ -43,7 +43,7 @@ public class RequestCommand extends CommandBase {
 
             StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
-            if (loopUser == null || !loopUser.isStaffChat())
+            if (loopUser == null || !loopUser.isStaffMessages())
                 continue;
 
             String format = plugin.getListMessage("Request-Module.Request-Broadcast");

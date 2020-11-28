@@ -1,5 +1,15 @@
 ## Default Message configuration file for
 ## BungeeStaff v2.1.4 Developed by Lickem
+
+# "Lickem"? Really?
+
+# Too lazy to restructure this shit.
+# Messages for ${project.name} ${project.version}
+
+General:
+  Only-Console: '&CThis command has to be executed from the console.'
+  Only-Player: '&cThis command has to be executed in-game.'
+
 BungeeStaff-Module:
   Reload: '&8[&bBungeeStaff&8] &aModules reloaded'
   No-Argument:

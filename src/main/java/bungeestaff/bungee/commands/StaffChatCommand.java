@@ -25,10 +25,7 @@ public class StaffChatCommand extends CommandBase {
             return;
 
         if (args.length == 0) {
-            if (user.switchStaffChat())
-                plugin.sendLineMessage("StaffChat-Module.StaffChat-Disabled", player);
-            else
-                plugin.sendLineMessage("StaffChat-Module.StaffChat-Enabled", player);
+            plugin.sendLineMessage("Staff-Chat-Module.StaffChat-" + (user.switchStaffChat() ? "Enabled" : "Disabled"), player);
             return;
         }
 
@@ -45,7 +42,7 @@ public class StaffChatCommand extends CommandBase {
 
             StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
-            if (loopUser == null || !loopUser.isOnline() || !loopUser.isStaffChat())
+            if (loopUser == null || !loopUser.isOnline() || !loopUser.isStaffMessages())
                 continue;
 
             TextUtil.sendMessage(loopPlayer, wholeMessage);
