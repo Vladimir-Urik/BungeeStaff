@@ -35,12 +35,12 @@ public abstract class AbstractCommand extends Command {
     private final Map<String, SubCommand> subCommands = new HashMap<>();
 
     public AbstractCommand(BungeeStaffPlugin plugin, String name) {
-        super(name);
+        super(name.toLowerCase());
         this.plugin = plugin;
     }
 
     public AbstractCommand(BungeeStaffPlugin plugin, String name, String permission, String... aliases) {
-        super(name, permission, aliases);
+        super(name.toLowerCase(), permission, aliases);
         this.plugin = plugin;
     }
 
@@ -49,16 +49,13 @@ public abstract class AbstractCommand extends Command {
     protected boolean checkPreconditions(CommandSender sender, String[] args) {
 
         if (!plugin.hasCustomPermission(getPermissionKey(), sender)) {
-            plugin.sendLineMessage(plugin.getMessages().getString("No-Permission"), sender);
+            plugin.sendLineMessage("General.No-Permission", sender);
             return false;
         }
 
         if (args.length > 0)
             if (getSubCommands().containsKey(args[0].toLowerCase())) {
                 SubCommand subCommand = getSubCommands().get(args[0].toLowerCase());
-
-                if (!checkRange(sender, subCommand.getRange(), args.length - 1))
-                    return false;
 
                 String[] cutArgs = Arrays.copyOfRange(args, 1, args.length);
 
@@ -87,10 +84,10 @@ public abstract class AbstractCommand extends Command {
             int res = range.check(length);
 
             if (res == -1) {
-                TextUtil.sendMessage(sender, plugin.getMessages().getString("Not-Enough-Arguments"));
+                TextUtil.sendMessage(sender, plugin.getMessages().getString("General.Not-Enough-Arguments"));
                 return false;
             } else if (res == 1) {
-                TextUtil.sendMessage(sender, plugin.getMessages().getString("Too-Many-Arguments"));
+                TextUtil.sendMessage(sender, plugin.getMessages().getString("General.Too-Many-Arguments"));
                 return false;
             }
         }
@@ -111,8 +108,8 @@ public abstract class AbstractCommand extends Command {
     }
 
     public SubCommand withSubCommand(String str) {
-        SubCommand subCommand = new SubCommand(plugin, str);
-        this.subCommands.put(str, subCommand);
+        SubCommand subCommand = new SubCommand(plugin, str.toLowerCase());
+        this.subCommands.put(subCommand.getName(), subCommand);
         return subCommand;
     }
 }

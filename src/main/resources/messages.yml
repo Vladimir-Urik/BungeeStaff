@@ -11,6 +11,9 @@ General:
   Only-Player: '&cThis command has to be executed in-game.'
   Player-Offline: '&cRequest player is offline.'
   Invalid-User: '&cStaff user invalid.'
+  No-Permission: '&4&lError: &cYou do not have permission for this command!'
+  Not-Enough-Arguments: '&cNot enough arguments.'
+  Too-Many-Arguments: '&cToo many arguments.'
 
 BungeeStaff-Module:
   Reload: '&8[&bBungeeStaff&8] &aModules reloaded'
@@ -151,5 +154,3 @@ Broadcast-Module:
 Server-Switch-Module:
   First-Join: '&8[&4&lS&8] %prefix%%player% &5joined &8(&d%server%&8)'
   Switch: '&8[&4&lS&8] %prefix%%player% &5switched to &8(&d%server_to%&8) &5from &8(&d%server_from%&8)'
-
-No-Permission: '&4&lError: &cYou do not have permission for this command!'

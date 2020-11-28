@@ -4,6 +4,7 @@ import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
+import com.google.common.base.Strings;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -49,11 +50,20 @@ public class StaffManager {
                 ProxyServer.getInstance().getLogger().warning("Rank " + rankName + " of " + name + " does no longer exist. Using the default rank.");
             }
 
+            ProxiedPlayer player = plugin.getProxy().getPlayer(uniqueID);
+
             StaffUser user = new StaffUser(uniqueID, rank);
+
+            if (player != null) {
+                if (Strings.isNullOrEmpty(name))
+                    name = player.getName();
+                if (player.isConnected())
+                    user.setOnline(true);
+            }
 
             user.setName(name);
             user.setStaffChat(section.getBoolean(key + ".staff-chat", false));
-            user.setStaffMessages(section.getBoolean(key + ".staff-messages", false));
+            user.setStaffMessages(section.getBoolean(key + ".staff-messages", plugin.getConfig().getBoolean("Defaults.staff-messages", false)));
 
             this.users.put(uniqueID, user);
         }
@@ -93,6 +103,10 @@ public class StaffManager {
 
     public void addUser(ProxiedPlayer player, Rank rank) {
         StaffUser user = new StaffUser(player.getUniqueId(), rank);
+
+        user.setName(player.getName());
+        user.setOnline(player.isConnected());
+
         addUser(user);
 
         user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
