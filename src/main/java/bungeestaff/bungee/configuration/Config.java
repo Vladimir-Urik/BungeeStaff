@@ -43,8 +43,7 @@ public class Config {
 
         if (!file.exists()) {
 
-            if (!file.getParentFile().mkdirs())
-                plugin.getProxy().getLogger().severe("Could not create folder structure for " + name + "(" + file.getPath() + ")");
+            file.getParentFile().mkdirs();
 
             try {
                 InputStream in = plugin.getResourceAsStream(name);

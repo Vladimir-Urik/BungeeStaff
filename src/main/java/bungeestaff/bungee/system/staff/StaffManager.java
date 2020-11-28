@@ -5,6 +5,7 @@ import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,6 +85,21 @@ public class StaffManager {
         return this.users.values().stream()
                 .filter(u -> u.getName().equals(name))
                 .findAny().orElse(null);
+    }
+
+    public void addUser(StaffUser user) {
+        this.users.put(user.getUniqueID(), user);
+    }
+
+    public void addUser(ProxiedPlayer player, Rank rank) {
+        StaffUser user = new StaffUser(player.getUniqueId(), rank);
+        addUser(user);
+
+        user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
+    }
+
+    public void removeUser(StaffUser user) {
+        this.users.remove(user.getUniqueID());
     }
 
     public Set<StaffUser> getUsers() {

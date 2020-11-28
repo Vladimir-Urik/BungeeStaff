@@ -49,21 +49,22 @@ public abstract class AbstractCommand extends Command {
     protected boolean checkPreconditions(CommandSender sender, String[] args) {
 
         if (!plugin.hasCustomPermission(getPermissionKey(), sender)) {
-            TextUtil.sendMessage(sender, plugin.getMessages().getString("No-Permission"));
+            plugin.sendLineMessage(plugin.getMessages().getString("No-Permission"), sender);
             return false;
         }
 
-        if (getSubCommands().containsKey(args[0].toLowerCase())) {
-            SubCommand subCommand = getSubCommands().get(args[0].toLowerCase());
+        if (args.length > 0)
+            if (getSubCommands().containsKey(args[0].toLowerCase())) {
+                SubCommand subCommand = getSubCommands().get(args[0].toLowerCase());
 
-            if (!checkRange(sender, subCommand.getRange(), args.length - 1))
+                if (!checkRange(sender, subCommand.getRange(), args.length - 1))
+                    return false;
+
+                String[] cutArgs = Arrays.copyOfRange(args, 1, args.length);
+
+                subCommand.getExecutor().onCommand(sender, cutArgs);
                 return false;
-
-            String[] cutArgs = Arrays.copyOfRange(args, 1, args.length);
-
-            subCommand.getExecutor().onCommand(sender, cutArgs);
-            return true;
-        }
+            }
 
         if (!checkRange(sender, getRange(), args.length))
             return false;

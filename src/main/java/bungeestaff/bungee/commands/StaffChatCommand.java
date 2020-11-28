@@ -13,6 +13,7 @@ public class StaffChatCommand extends CommandBase {
 
     public StaffChatCommand(BungeeStaffPlugin plugin) {
         super(plugin, "staffchat", "StaffChat-Command", "sc");
+        setPlayerOnly(true);
     }
 
     @Override

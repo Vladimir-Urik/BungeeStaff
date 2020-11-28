@@ -9,6 +9,8 @@
 General:
   Only-Console: '&CThis command has to be executed from the console.'
   Only-Player: '&cThis command has to be executed in-game.'
+  Player-Offline: '&cRequest player is offline.'
+  Invalid-User: '&cStaff user invalid.'
 
 BungeeStaff-Module:
   Reload: '&8[&bBungeeStaff&8] &aModules reloaded'
@@ -28,6 +30,8 @@ BungeeStaff-Module:
   No-Such-Argument:
       - '&cIncorrect usage'
       - '&cUsage: /bungeestaff <help>'
+  User-Added: '&7User added.'
+  User-Removed: '&7User removed.'
 
 Group-Module:
   Player-Not-Found: '&e&l* &cPlayer not found'

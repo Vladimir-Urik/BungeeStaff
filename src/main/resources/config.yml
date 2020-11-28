@@ -26,6 +26,9 @@ Cooldowns:
 Broadcast:
   Use-Broadcast: true
 
+Defaults:
+  staff-messages: true
+
 # Prefix to use, when there's none defined for the player.
 # ( this is only used if you delete the default rank against my notes ;) )
 No-Rank: '&7'

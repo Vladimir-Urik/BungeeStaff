@@ -11,14 +11,14 @@ public class TextUtil {
 
     public void sendMessage(CommandSender sender, String message) {
         if (!Strings.isNullOrEmpty(message))
-            sender.sendMessage(new TextComponent(color(message)));
+            sender.sendMessage(format(message));
     }
 
-    public TextComponent format(String msg) {
-        return new TextComponent(color(msg));
+    public TextComponent format(String message) {
+        return new TextComponent(color(message));
     }
 
-    public String color(String msg) {
-        return msg == null ? null : ChatColor.translateAlternateColorCodes('&', msg);
+    public String color(String message) {
+        return message == null ? null : ChatColor.translateAlternateColorCodes('&', message);
     }
 }

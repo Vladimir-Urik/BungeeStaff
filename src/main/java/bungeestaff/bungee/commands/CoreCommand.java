@@ -1,11 +1,12 @@
 package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.util.TextUtil;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Set;
 
@@ -23,6 +24,44 @@ public class CoreCommand extends CommandBase {
         withSubCommand("reload")
                 .withExecutor((sender, args) -> plugin.reload(sender))
                 .withRange(0);
+
+        withSubCommand("add")
+                .withExecutor((sender, args) -> {
+                    ProxiedPlayer player = plugin.getProxy().getPlayer(args[0]);
+
+                    if (player == null) {
+                        plugin.sendLineMessage("General.Player-Offline", sender);
+                        return;
+                    }
+
+                    Rank rank = plugin.getRankManager().getRank("default");
+                    if (args.length > 1) {
+                        rank = plugin.getRankManager().getRank(args[1]);
+
+                        if (rank == null) {
+                            plugin.sendLineMessage("General.Invalid-Rank", sender);
+                            return;
+                        }
+                    }
+
+                    plugin.getStaffManager().addUser(player, rank);
+                    plugin.sendLineMessage("BungeeStaff-Module.User-Added", sender);
+                })
+                .withRange(1, 2);
+
+        withSubCommand("remove")
+                .withExecutor((sender, args) -> {
+                    StaffUser user = plugin.getStaffManager().getUser(args[0]);
+
+                    if (user == null) {
+                        plugin.sendLineMessage("General.Invalid-User", sender);
+                        return;
+                    }
+
+                    plugin.getStaffManager().removeUser(user);
+                    plugin.sendLineMessage("BungeeStaff-Module.User-Removed", sender);
+                })
+                .withRange(1);
 
         withSubCommand("list")
                 .withExecutor((sender, args) -> {
