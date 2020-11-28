@@ -7,7 +7,10 @@ import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Arrays;
@@ -61,14 +64,13 @@ public class ReportCommand extends CommandBase {
             String broadcast = plugin.getListMessage("Report-Module.Report-Broadcast");
 
             if (plugin.getMessages().getBoolean("Report-Module.Report-Clickable")) {
-                BaseComponent[] converted = TextComponent.fromLegacyText(broadcast
+                TextComponent message = TextUtil.format(broadcast
                         .replace("%reporter_server%", player.getServer().getInfo().getName())
                         .replace("%reporter%", player.getName())
                         .replace("%reported%", target.getName())
                         .replace("%reported_server%", target.getServer().getInfo().getName())
                         .replace("%reason%", reason));
 
-                TextComponent message = new TextComponent(converted);
                 message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(plugin.getLineMessage("Report-Module.Hover-Message")
                         .replace("%reported%", target.getName())
                         .replace("%reported_server%", target.getServer().getInfo().getName()))
