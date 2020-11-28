@@ -1,7 +1,7 @@
 package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.TextUtil;
+import bungeestaff.bungee.util.TextUtil;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.system.staff.StaffUser;

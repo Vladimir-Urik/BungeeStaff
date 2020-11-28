@@ -1,14 +1,15 @@
 package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.TextUtil;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class RequestCommand extends CommandBase {
 
@@ -28,9 +29,9 @@ public class RequestCommand extends CommandBase {
         StringBuilder message = new StringBuilder();
         Arrays.stream(args).skip(1).forEach(message::append);
 
-        if (!plugin.getCooldownManager().triggerCooldown(CooldownType.REQUEST, player.getUniqueId())) {
+        if (!plugin.getCooldownManager().trigger(CooldownType.REQUEST, player.getUniqueId())) {
             TextUtil.sendMessage(player, plugin.getLineMessage("Request-Module.Request-Cooldown-Message")
-                    .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REQUEST, player.getUniqueId()))));
+                    .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REQUEST, player.getUniqueId(), TimeUnit.SECONDS))));
             return;
         }
 

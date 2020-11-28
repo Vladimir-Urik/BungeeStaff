@@ -1,7 +1,7 @@
 package bungeestaff.bungee.commands.framework;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.TextUtil;
+import bungeestaff.bungee.util.TextUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;

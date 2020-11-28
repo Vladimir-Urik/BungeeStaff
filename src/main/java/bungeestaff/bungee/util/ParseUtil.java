@@ -1,4 +1,4 @@
-package bungeestaff.bungee;
+package bungeestaff.bungee.util;
 
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;

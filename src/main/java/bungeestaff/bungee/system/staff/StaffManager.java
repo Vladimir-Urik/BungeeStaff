@@ -1,9 +1,10 @@
 package bungeestaff.bungee.system.staff;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.Config;
-import bungeestaff.bungee.ParseUtil;
+import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.system.rank.Rank;
+import bungeestaff.bungee.util.ParseUtil;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,26 +26,31 @@ public class StaffManager {
     }
 
     public void load() {
+
         storage.load();
         users.clear();
 
-        Configuration config = storage.getConfiguration();
+        Configuration section = storage.getConfiguration();
 
-        for (String key : config.getKeys()) {
+        for (String key : section.getKeys()) {
             UUID uniqueID = ParseUtil.parseUUID(key);
 
             if (uniqueID == null)
                 continue;
 
-            String name = config.getString(key + ".name");
-            String rankName = config.getString(key + ".rank");
+            String name = section.getString(key + ".name");
+            String rankName = section.getString(key + ".rank");
 
             Rank rank = plugin.getRankManager().getRank(rankName);
+
+            if (rank == null)
+                ProxyServer.getInstance().getLogger().warning("Rank " + rankName + " of " + name + " does no longer exist.");
 
             StaffUser user = new StaffUser(uniqueID, rank);
 
             user.setName(name);
-            user.setStaffChat(config.getBoolean(key + ".staff-chat", false));
+            user.setStaffChat(section.getBoolean(key + ".staff-chat", false));
+            user.setStaffMessages(section.getBoolean(key + ".staff-messages", false));
 
             this.users.put(uniqueID, user);
         }
@@ -56,17 +62,14 @@ public class StaffManager {
         Configuration config = storage.getConfiguration();
 
         for (StaffUser user : this.users.values()) {
-            config.set(user.getUniqueID().toString() + ".name", user.getName());
-            config.set(user.getUniqueID().toString() + ".rank", user.getRank().getName());
-            config.set(user.getUniqueID().toString() + ".staff-chat", user.isStaffChat());
+            String uuidString = user.getUniqueID().toString();
+            config.set(uuidString + ".name", user.getName());
+            config.set(uuidString + ".rank", user.getRank().getName());
+            config.set(uuidString + ".staff-chat", user.isStaffChat());
+            config.set(uuidString + ".staff-messages", user.isStaffMessages());
         }
 
         storage.save();
-    }
-
-    public boolean hasChatEnabled(UUID uniqueID) {
-        StaffUser user = getUser(uniqueID);
-        return user != null && user.isStaffChat();
     }
 
     @Nullable

@@ -1,16 +1,17 @@
 package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.TextUtil;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class ReportCommand extends CommandBase {
 
@@ -40,9 +41,9 @@ public class ReportCommand extends CommandBase {
             return;
         }
 
-        if (!plugin.getCooldownManager().triggerCooldown(CooldownType.REPORT, player.getUniqueId())) {
+        if (!plugin.getCooldownManager().trigger(CooldownType.REPORT, player.getUniqueId())) {
             plugin.sendMessage(plugin.getLineMessage("Report-Module.Report-Cooldown-Message")
-                    .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REPORT, player.getUniqueId()))), player);
+                    .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REPORT, player.getUniqueId(), TimeUnit.SECONDS))), player);
             return;
         }
 

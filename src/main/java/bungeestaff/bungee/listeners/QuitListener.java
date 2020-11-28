@@ -1,7 +1,7 @@
 package bungeestaff.bungee.listeners;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.TextUtil;
+import bungeestaff.bungee.util.TextUtil;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

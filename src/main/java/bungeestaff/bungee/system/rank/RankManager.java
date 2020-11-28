@@ -1,7 +1,7 @@
 package bungeestaff.bungee.system.rank;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.Config;
+import bungeestaff.bungee.configuration.Config;
 import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
 
@@ -26,17 +26,18 @@ public class RankManager {
     }
 
     public void load() {
-        this.config.load();
 
-        Configuration ranks = plugin.getConfig().getSection("Ranks");
+        config.load();
+        ranks.clear();
 
-        if (ranks == null)
-            return;
+        Configuration section = config.getConfiguration();
 
-        for (String key : ranks.getKeys()) {
-            String prefix = ranks.getString(key + ".prefix");
+        for (String key : section.getKeys()) {
+            String prefix = section.getString(key + ".prefix");
+
             Rank rank = new Rank(key);
             rank.setPrefix(prefix);
+
             this.ranks.put(key, rank);
         }
 

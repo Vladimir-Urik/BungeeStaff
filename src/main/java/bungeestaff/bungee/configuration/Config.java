@@ -1,5 +1,6 @@
-package bungeestaff.bungee;
+package bungeestaff.bungee.configuration;
 
+import bungeestaff.bungee.BungeeStaffPlugin;
 import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;

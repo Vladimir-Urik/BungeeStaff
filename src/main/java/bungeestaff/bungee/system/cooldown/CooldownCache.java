@@ -13,7 +13,7 @@ public class CooldownCache {
 
     private final BungeeStaffPlugin plugin;
 
-    private final Map<UUID, Long> cooldowns = new HashMap<>();
+    private final Map<UUID, Long> cache = new HashMap<>();
 
     @Getter
     @Setter
@@ -23,36 +23,34 @@ public class CooldownCache {
         this.plugin = plugin;
     }
 
-    public boolean triggerCooldown(UUID uniqueID) {
-        if (hasCooldown(uniqueID))
+    public boolean trigger(UUID uniqueID) {
+        if (has(uniqueID))
             return false;
 
-        startCooldown(uniqueID);
+        start(uniqueID);
         return true;
     }
 
-    public void startCooldown(UUID uniqueID) {
-        this.cooldowns.put(uniqueID, System.currentTimeMillis() + cooldown);
+    public void start(UUID uniqueID) {
+        this.cache.put(uniqueID, System.currentTimeMillis() + cooldown);
 
-        plugin.getProxy().getScheduler().schedule(plugin, () -> {
-            removeCooldown(uniqueID);
-        }, cooldown, TimeUnit.MILLISECONDS);
+        plugin.getProxy().getScheduler().schedule(plugin, () -> remove(uniqueID), cooldown, TimeUnit.MILLISECONDS);
     }
 
-    public boolean hasCooldown(UUID uniqueID) {
-        if (this.cooldowns.containsKey(uniqueID)) {
-            if (this.cooldowns.get(uniqueID) > System.currentTimeMillis())
+    public boolean has(UUID uniqueID) {
+        if (this.cache.containsKey(uniqueID)) {
+            if (this.cache.get(uniqueID) > System.currentTimeMillis())
                 return true;
-            else removeCooldown(uniqueID);
+            else remove(uniqueID);
         }
         return false;
     }
 
-    public void removeCooldown(UUID uniqueID) {
-        this.cooldowns.remove(uniqueID);
+    public void remove(UUID uniqueID) {
+        this.cache.remove(uniqueID);
     }
 
     public long getRemaining(UUID uniqueID) {
-        return this.cooldowns.containsKey(uniqueID) ? this.cooldowns.get(uniqueID) : 0;
+        return this.cache.containsKey(uniqueID) ? this.cache.get(uniqueID) : 0;
     }
 }
