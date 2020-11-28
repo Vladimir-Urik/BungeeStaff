@@ -2,7 +2,6 @@ package bungeestaff.bungee.listeners;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.TextUtil;
-import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -19,24 +18,24 @@ public class ChatListener extends EventListener {
     public void onChat(ChatEvent event) {
         ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 
-        if (!plugin.getStaffManager().hasChatEnabled(player.getUniqueId()) || event.getMessage().startsWith("/"))
-            return;
-
         StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
 
         if (user == null)
             return;
 
-        Rank rank = user.getRank();
+        if (!user.isStaffChat() || event.getMessage().startsWith("/"))
+            return;
 
-        String message = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
+        String prefix = plugin.getPrefix(player);
+
+        String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
                 .replace("%player_server%", player.getServer().getInfo().getName())
                 .replace("%player%", player.getName())
-                .replace("%message%", event.getMessage());
+                .replace("%message%", event.getMessage())
+                .replace("%prefix%", prefix);
 
         // Send one to console
-        TextUtil.sendMessage(plugin.getProxy().getConsole(), message
-                .replace("%prefix%", rank == null ? plugin.getConfig().getString("No-Rank") : rank.getPrefix()));
+        TextUtil.sendMessage(plugin.getProxy().getConsole(), wholeMessage);
 
         event.setCancelled(true);
 
@@ -47,11 +46,10 @@ public class ChatListener extends EventListener {
             if (loopUser == null)
                 continue;
 
-            if (!plugin.hasCustomPermission("StaffChat-Notify-Command") || !loopUser.isStaffChat())
+            if (!plugin.hasCustomPermission("StaffChat-Notify-Command") || !loopUser.isStaffMessages())
                 continue;
 
-            String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
-            TextUtil.sendMessage(loopPlayer, message.replace("%prefix%", prefix));
+            TextUtil.sendMessage(loopPlayer, wholeMessage);
         }
     }
 }

@@ -1,21 +1,22 @@
 package bungeestaff.bungee;
 
 import bungeestaff.bungee.commands.*;
+import bungeestaff.bungee.listeners.EventListener;
 import bungeestaff.bungee.listeners.*;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
 import bungeestaff.bungee.system.staff.StaffManager;
+import bungeestaff.bungee.system.staff.StaffUser;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class BungeeStaffPlugin extends Plugin {
 
@@ -92,12 +93,12 @@ public class BungeeStaffPlugin extends Plugin {
     private void registerCommands() {
 
         registerCommands(new CoreCommand(this),
-                new StaffChatCMD(),
-                new RequestCMD(),
+                new StaffChatCommand(this),
+                new RequestCommand(this),
                 new ReportCommand(this),
-                new ToggleSM(),
-                new StaffFollow(),
-                new StaffList());
+                new ToggleCommand(this),
+                new StaffFollowCommand(this),
+                new StaffListCommand(this));
 
         if (getConfig().getBoolean("Broadcast.Use-Broadcast"))
             registerCommands(new BroadcastCommand(this));
@@ -126,7 +127,8 @@ public class BungeeStaffPlugin extends Plugin {
 
     public boolean hasCustomPermission(String key, CommandSender... senders) {
         for (CommandSender sender : senders) {
-            if (!sender.hasPermission(getConfig().getString("Custom-Permissions." + key)))
+            String perm = getConfig().getString("Custom-Permissions." + key);
+            if (!sender.hasPermission(perm) && !Strings.isNullOrEmpty(perm))
                 return false;
         }
         return true;
@@ -156,6 +158,17 @@ public class BungeeStaffPlugin extends Plugin {
     public void sendListMessage(String key, CommandSender... senders) {
         String message = getListMessage(key);
         sendMessage(message, senders);
+    }
+
+    @NotNull
+    public String getPrefix(ProxiedPlayer player) {
+        return getPrefix(player.getUniqueId());
+    }
+
+    @NotNull
+    public String getPrefix(UUID uniqueID) {
+        StaffUser user = staffManager.getUser(uniqueID);
+        return user == null || user.getRank() == null || user.getRank().getPrefix() == null ? getConfig().getString("No-Rank") : user.getRank().getPrefix();
     }
 
     public Configuration getMessages() {

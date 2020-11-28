@@ -9,8 +9,9 @@ public abstract class CommandBase extends AbstractCommand {
         super(plugin, name);
     }
 
-    public CommandBase(BungeeStaffPlugin plugin, String name, String permission, String... aliases) {
-        super(plugin, name, permission, aliases);
+    public CommandBase(BungeeStaffPlugin plugin, String name, String permissionKey, String... aliases) {
+        super(plugin, name, "", aliases);
+        setPermissionKey(permissionKey);
     }
 
     public abstract void onCommand(CommandSender sender, String[] args);

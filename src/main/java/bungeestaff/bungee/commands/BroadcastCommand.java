@@ -9,8 +9,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class BroadcastCommand extends CommandBase {
 
     public BroadcastCommand(BungeeStaffPlugin plugin) {
-        super(plugin, "broadcast", "", "announce");
-        setPermissionKey("Broadcast-Command");
+        super(plugin, "broadcast", "Broadcast-Command", "announce");
         setPlayerOnly(true);
         setRange(1, -1);
     }
@@ -31,7 +30,7 @@ public class BroadcastCommand extends CommandBase {
                 .replace("%player%", sender.getName())
                 .replace("%player_server%", player.getServer().getInfo().getName())
                 .replace("%message%", message)
-                .replace("%prefix%", user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix());
+                .replace("%prefix%", plugin.getPrefix(player));
 
         plugin.sendMessage(format, plugin.getProxy().getPlayers());
     }

@@ -122,7 +122,6 @@ Staff-List:
     - '&6&lOnline Staff:&e %online_staff%'
     - ''
     - '&cStaff Online:'
-  Dont-Edit: '%list%'
   Footer:
     - '&8&m-----------------------------'
 

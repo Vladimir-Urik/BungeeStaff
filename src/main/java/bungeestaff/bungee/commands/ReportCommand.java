@@ -49,7 +49,7 @@ public class ReportCommand extends CommandBase {
         plugin.sendLineMessage("Report-Module.Report-Sent", sender);
 
         for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
-            if (!plugin.hasCustomPermission("Custom-Permissions.Report-Notify", loopPlayer))
+            if (!plugin.hasCustomPermission("Report-Notify", loopPlayer))
                 continue;
 
             StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());

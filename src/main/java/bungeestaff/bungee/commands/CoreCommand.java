@@ -12,9 +12,8 @@ import java.util.Set;
 public class CoreCommand extends CommandBase {
 
     public CoreCommand(BungeeStaffPlugin plugin) {
-        super(plugin, "bungeestaff", "", "bstaff");
+        super(plugin, "bungeestaff", "Core-Command", "bstaff");
 
-        setPermissionKey("Core-Command");
         setRange(-1);
 
         withSubCommand("help")

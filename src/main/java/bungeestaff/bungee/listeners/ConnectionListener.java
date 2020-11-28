@@ -31,10 +31,10 @@ public class ConnectionListener extends EventListener {
 
             StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
-            if (loopUser == null || !loopUser.isStaffChat())
+            if (loopUser == null || !loopUser.isStaffMessages())
                 continue;
 
-            String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
+            String prefix = plugin.getPrefix(player);
 
             ServerInfo targetServer = event.getTarget();
 

@@ -33,15 +33,13 @@ public class QuitListener extends EventListener {
 
                 StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
 
-                if (loopUser == null || !loopUser.isStaffChat())
+                if (loopUser == null || !loopUser.isStaffMessages())
                     continue;
-
-                String prefix = user.getRank() == null ? plugin.getConfig().getString("No-Rank") : user.getRank().getPrefix();
 
                 TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Staff-Messages.Staff-Leave")
                         .replace("%server_from%", player.getServer().getInfo().getName())
                         .replace("%player%", player.getName())
-                        .replace("%prefix%", prefix));
+                        .replace("%prefix%", plugin.getPrefix(player)));
             }
     }
 }
