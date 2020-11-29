@@ -40,7 +40,7 @@ public class UserCache {
 
     // Add user from local proxy
     public void addUser(ProxiedPlayer player) {
-        getUsers(serverId).add(new CachedUser(player.getName(), player.getServer().getInfo().getName()));
+        getUsers(serverId).add(new CachedUser(player));
     }
 
     public void removeUser(String user) {

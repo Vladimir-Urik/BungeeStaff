@@ -3,6 +3,7 @@ package bungeestaff.bungee.system.staff;
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.rabbit.MessageType;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
 import bungeestaff.bungee.util.TextUtil;
@@ -111,6 +112,17 @@ public class StaffManager {
 
         if (sync)
             plugin.getMessagingService().sendStaffAdd(user);
+    }
+
+    public void addUser(CachedUser cachedUser, Rank rank, boolean sync) {
+        StaffUser user = new StaffUser(cachedUser.getUniqueId(), rank);
+
+        user.setName(cachedUser.getName());
+        user.setOnline(true);
+
+        addUser(user, sync);
+
+        user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
     }
 
     public void addUser(ProxiedPlayer player, Rank rank, boolean sync) {

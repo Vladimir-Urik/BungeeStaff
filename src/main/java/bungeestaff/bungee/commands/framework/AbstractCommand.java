@@ -4,7 +4,6 @@ import bungeestaff.bungee.BungeeStaffPlugin;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractCommand extends Command {
 
@@ -53,17 +53,17 @@ public abstract class AbstractCommand extends Command {
             return false;
         }
 
-        if (args.length > 0)
-            if (getSubCommands().containsKey(args[0].toLowerCase())) {
-                SubCommand subCommand = getSubCommands().get(args[0].toLowerCase());
+        if (args.length > 0) {
+            Optional<SubCommand> subCommand = getSubCommands().values().stream()
+                    .filter(s -> s.matches(args[0]))
+                    .findAny();
 
+            if (subCommand.isPresent()) {
                 String[] cutArgs = Arrays.copyOfRange(args, 1, args.length);
-
-                ProxyServer.getInstance().getLogger().info(Arrays.toString(cutArgs));
-
-                subCommand.execute(sender, cutArgs);
+                subCommand.get().execute(sender, cutArgs);
                 return false;
             }
+        }
 
         if (!checkRange(sender, getRange(), args.length))
             return false;
@@ -82,11 +82,8 @@ public abstract class AbstractCommand extends Command {
     }
 
     protected boolean checkRange(CommandSender sender, @Nullable Range range, int length) {
-        ProxyServer.getInstance().getLogger().info("" + (range == null));
         if (range != null) {
             int res = range.check(length);
-
-            ProxyServer.getInstance().getLogger().info(range.toString() + " = " + res);
 
             if (res == -1) {
                 plugin.sendMessage(sender, "General.Not-Enough-Arguments");

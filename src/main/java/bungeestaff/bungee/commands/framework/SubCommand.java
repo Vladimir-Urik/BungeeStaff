@@ -5,11 +5,19 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class SubCommand extends AbstractCommand {
 
     @Getter
     @Setter
     private CommandExecutor executor;
+
+    private final List<String> aliases = new ArrayList<>();
 
     public SubCommand(BungeeStaffPlugin plugin, String name) {
         super(plugin, name);
@@ -52,7 +60,22 @@ public class SubCommand extends AbstractCommand {
         return this;
     }
 
+    public SubCommand withAliases(String... aliases) {
+        this.aliases.addAll(Arrays.stream(aliases)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList()));
+        return this;
+    }
+
     public interface CommandExecutor {
         void onCommand(CommandSender sender, String[] args);
+    }
+
+    public List<String> getSubAliases() {
+        return Collections.unmodifiableList(aliases);
+    }
+
+    public boolean matches(String arg) {
+        return this.getName().equalsIgnoreCase(arg) || getSubAliases().contains(arg.toLowerCase());
     }
 }

@@ -2,8 +2,8 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
-import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.rabbit.MessageType;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
@@ -46,8 +46,9 @@ public class ReportCommand extends CommandBase {
                 return;
             }
         } else
-            user = new CachedUser(target.getName(), target.getServer().getInfo().getName());
+            user = new CachedUser(target);
 
+        // Can only be himself when on the same server, so we don't care about target being null.
         if (player.equals(target)) {
             plugin.sendMessage(sender, "Report-Module.Player-Sender");
             return;
@@ -98,7 +99,7 @@ public class ReportCommand extends CommandBase {
     }
 
     private void sendJson(TextComponent component) {
-        plugin.getStaffManager().getUsers(u -> u.isOnline() && u.isStaffMessages())
+        plugin.getStaffManager().getUsers(u -> u.asPlayer() != null && u.isOnline() && u.isStaffMessages())
                 .forEach(u -> u.asPlayer().sendMessage(component));
     }
 }

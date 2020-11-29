@@ -2,6 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.util.TextUtil;
@@ -27,12 +28,18 @@ public class CoreCommand extends CommandBase {
 
         withSubCommand("add")
                 .withExecutor((sender, args) -> {
-                    ProxiedPlayer player = plugin.getProxy().getPlayer(args[0]);
 
-                    if (player == null) {
-                        plugin.sendMessage(sender, "General.Player-Offline");
-                        return;
-                    }
+                    CachedUser user;
+                    ProxiedPlayer target = plugin.getProxy().getPlayer(args[0]);
+
+                    if (target == null) {
+                        user = plugin.getMessagingService().getUserCache().getUser(args[0]);
+
+                        if (user == null) {
+                            plugin.sendMessage(sender, "General.Player-Offline");
+                            return;
+                        }
+                    } else user = new CachedUser(target);
 
                     Rank rank = plugin.getRankManager().getRank("default");
                     if (args.length > 1) {
@@ -44,7 +51,7 @@ public class CoreCommand extends CommandBase {
                         }
                     }
 
-                    plugin.getStaffManager().addUser(player, rank, true);
+                    plugin.getStaffManager().addUser(user, rank, true);
                     plugin.sendMessage(sender, "BungeeStaff-Module.User-Added");
                 })
                 .withRange(1, 2);
@@ -64,6 +71,7 @@ public class CoreCommand extends CommandBase {
                 .withRange(1);
 
         withSubCommand("ranks")
+                .withAliases("list")
                 .withExecutor((sender, args) -> {
                     StringBuilder message = new StringBuilder("&8&m          &3 Ranks &8&m          ");
                     for (Rank rank : plugin.getRankManager().getRanks()) {
