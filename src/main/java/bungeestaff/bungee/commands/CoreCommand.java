@@ -18,7 +18,7 @@ public class CoreCommand extends CommandBase {
         setRange(-1);
 
         withSubCommand("help")
-                .withExecutor((sender, args) -> plugin.sendListMessage("BungeeStaff-Module.Help", sender))
+                .withExecutor((sender, args) -> plugin.sendMessage(sender, "BungeeStaff-Module.Help"))
                 .withRange(0);
 
         withSubCommand("reload")
@@ -30,7 +30,7 @@ public class CoreCommand extends CommandBase {
                     ProxiedPlayer player = plugin.getProxy().getPlayer(args[0]);
 
                     if (player == null) {
-                        plugin.sendLineMessage("General.Player-Offline", sender);
+                        plugin.sendMessage(sender, "General.Player-Offline");
                         return;
                     }
 
@@ -39,13 +39,13 @@ public class CoreCommand extends CommandBase {
                         rank = plugin.getRankManager().getRank(args[1]);
 
                         if (rank == null) {
-                            plugin.sendLineMessage("General.Invalid-Rank", sender);
+                            plugin.sendMessage(sender, "General.Invalid-Rank");
                             return;
                         }
                     }
 
                     plugin.getStaffManager().addUser(player, rank);
-                    plugin.sendLineMessage("BungeeStaff-Module.User-Added", sender);
+                    plugin.sendMessage(sender, "BungeeStaff-Module.User-Added");
                 })
                 .withRange(1, 2);
 
@@ -54,12 +54,12 @@ public class CoreCommand extends CommandBase {
                     StaffUser user = plugin.getStaffManager().getUser(args[0]);
 
                     if (user == null) {
-                        plugin.sendLineMessage("General.Invalid-User", sender);
+                        plugin.sendMessage(sender, "General.Invalid-User");
                         return;
                     }
 
                     plugin.getStaffManager().removeUser(user);
-                    plugin.sendLineMessage("BungeeStaff-Module.User-Removed", sender);
+                    plugin.sendMessage(sender, "BungeeStaff-Module.User-Removed");
                 })
                 .withRange(1);
 
@@ -78,6 +78,6 @@ public class CoreCommand extends CommandBase {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        plugin.sendListMessage("BungeeStaff-Module.Help", sender);
+        plugin.sendMessage(sender, "BungeeStaff-Module.Help");
     }
 }

@@ -20,8 +20,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -88,7 +86,7 @@ public class BungeeStaffPlugin extends Plugin {
         broadcastManager.load();
         rankManager.load();
 
-        TextUtil.sendMessage(sender, getLineMessage("BungeeStaff-Module.Reload")
+        TextUtil.sendMessage(sender, getMessage("BungeeStaff-Module.Reload")
                 .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));
     }
 
@@ -139,30 +137,17 @@ public class BungeeStaffPlugin extends Plugin {
         return true;
     }
 
-    public void sendMessage(String message, Collection<ProxiedPlayer> players) {
-        players.forEach(p -> TextUtil.sendMessage(p, message));
+    public void sendMessage(CommandSender sender, String key) {
+        String message = getMessage(key);
+        TextUtil.sendMessage(sender, message);
     }
 
-    public void sendMessage(String message, CommandSender... senders) {
-        Arrays.stream(senders).forEach(sender -> TextUtil.sendMessage(sender, message));
-    }
-
-    public String getLineMessage(String key) {
-        return TextUtil.color(getMessages().getString(key));
-    }
-
-    public void sendLineMessage(String key, CommandSender... senders) {
-        String message = getLineMessage(key);
-        sendMessage(message, senders);
-    }
-
-    public String getListMessage(String key) {
-        return String.join("\n&r", getMessages().getStringList(key));
-    }
-
-    public void sendListMessage(String key, CommandSender... senders) {
-        String message = getListMessage(key);
-        sendMessage(message, senders);
+    /**
+     * Get line or list message.
+     */
+    public String getMessage(String key) {
+        String message = getMessages().getString(key);
+        return TextUtil.color(message == null ? String.join("\n&r", getMessages().getStringList(key)) : message);
     }
 
     @NotNull
@@ -182,7 +167,7 @@ public class BungeeStaffPlugin extends Plugin {
     public StaffUser getUser(ProxiedPlayer player) {
         StaffUser user = staffManager.getUser(player);
         if (user == null)
-            sendLineMessage("General.You-Are-Not-Staff", player);
+            sendMessage(player, "General.You-Are-Not-Staff");
         return user;
     }
 

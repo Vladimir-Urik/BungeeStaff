@@ -23,7 +23,7 @@ public class BroadcastCommand extends CommandBase {
         BroadcastFormat format = plugin.getBroadcastManager().getFormat(args[0]);
 
         if (format == null) {
-            plugin.sendLineMessage("Broadcast-Module.Invalid-Format", sender);
+            plugin.sendMessage(sender, "Broadcast-Module.Invalid-Format");
             return;
         }
 
