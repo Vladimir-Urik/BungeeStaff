@@ -37,3 +37,4 @@ Rabbit:
   Port: 5672
   Username: 'root'
   Password: 'pass'
+  User-Update-Interval: 10

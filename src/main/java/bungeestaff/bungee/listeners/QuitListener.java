@@ -24,6 +24,8 @@ public class QuitListener extends EventListener {
 
         user.setOnline(false);
 
+        plugin.getMessagingManager().removeUser(player.getName());
+
         if (!plugin.hasCustomPermission("Staff-Leave", player))
             return;
 

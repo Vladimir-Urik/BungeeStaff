@@ -25,6 +25,8 @@ public class JoinListener extends EventListener {
         user.setOnline(true);
         user.setName(player.getName());
 
+        plugin.getMessagingManager().addUser(player);
+
         if (!plugin.hasCustomPermission("Staff-Join", player))
             return;
 

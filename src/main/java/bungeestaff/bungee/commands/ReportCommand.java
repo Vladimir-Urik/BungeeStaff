@@ -2,6 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
+import bungeestaff.bungee.rabbit.CachedUser;
 import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.system.staff.StaffUser;
@@ -34,11 +35,18 @@ public class ReportCommand extends CommandBase {
         Arrays.stream(args).skip(1).forEach(str -> reason.append(" ").append(str));
 
         ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
+        CachedUser user;
 
         if (target == null) {
-            plugin.sendLineMessage("Report-Module.Player-Not-Found", sender);
-            return;
-        }
+
+            user = plugin.getMessagingManager().getUser(args[0]);
+
+            if (user == null) {
+                plugin.sendLineMessage("Report-Module.Player-Not-Found", sender);
+                return;
+            }
+        } else
+            user = new CachedUser(target.getName(), target.getServer().getInfo().getName());
 
         if (player.equals(target)) {
             plugin.sendLineMessage("Report-Module.Player-Sender", sender);
@@ -69,25 +77,25 @@ public class ReportCommand extends CommandBase {
                 TextComponent message = TextUtil.format(format
                         .replace("%reporter_server%", player.getServer().getInfo().getName())
                         .replace("%reporter%", player.getName())
-                        .replace("%reported%", target.getName())
-                        .replace("%reported_server%", target.getServer().getInfo().getName())
+                        .replace("%reported%", user.getName())
+                        .replace("%reported_server%", user.getServer())
                         .replace("%reason%", reason));
 
                 message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(plugin.getLineMessage("Report-Module.Hover-Message")
-                        .replace("%reported%", target.getName())
-                        .replace("%reported_server%", target.getServer().getInfo().getName()))
+                        .replace("%reported%", user.getName())
+                        .replace("%reported_server%", user.getServer()))
                         .create()));
 
                 message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, plugin.getLineMessage("Report-Module.JSONClick-Command")
-                        .replace("%reported%", target.getName())));
+                        .replace("%reported%", user.getName())));
 
                 loopPlayer.sendMessage(message);
             } else {
                 TextUtil.sendMessage(loopPlayer, format
                         .replace("%reporter_server%", player.getServer().getInfo().getName())
-                        .replace("%reporter%", player.getName())
-                        .replace("%reported%", target.getName())
-                        .replace("%reported_server%", target.getServer().getInfo().getName())
+                        .replace("%reporter%", user.getName())
+                        .replace("%reported%", user.getName())
+                        .replace("%reported_server%", user.getServer())
                         .replace("%reason%", reason));
             }
 
@@ -95,8 +103,8 @@ public class ReportCommand extends CommandBase {
             plugin.getMessagingManager().sendMessage(MessageType.STAFF, format
                     .replace("%reporter_server%", player.getServer().getInfo().getName())
                     .replace("%reporter%", player.getName())
-                    .replace("%reported%", target.getName())
-                    .replace("%reported_server%", target.getServer().getInfo().getName())
+                    .replace("%reported%", user.getName())
+                    .replace("%reported_server%", user.getServer())
                     .replace("%reason%", reason));
         }
     }
