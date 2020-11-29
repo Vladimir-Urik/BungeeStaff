@@ -1,6 +1,7 @@
 package bungeestaff.bungee.rabbit;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
+import com.google.common.base.Strings;
 import com.rabbitmq.client.*;
 import lombok.Data;
 import net.md_5.bungee.api.ProxyServer;
@@ -10,6 +11,7 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -64,9 +66,13 @@ public class MessagingManager {
     }
 
     public void processUserUpdate(String serverId, String message) {
+
+        if (Strings.isNullOrEmpty(message))
+            return;
+
         Set<CachedUser> users = new HashSet<>();
-        for (String arg : message.split(";")) {
-            String[] arr = arg.split("=");
+        for (String arg : message.trim().split(";")) {
+            String[] arr = arg.trim().split("=");
 
             String name = arr[0];
             String server = arr[1];
@@ -80,6 +86,7 @@ public class MessagingManager {
         String message = plugin.getProxy().getPlayers().stream()
                 .map(player -> player.getName() + "=" + player.getServer().getInfo().getName())
                 .collect(Collectors.joining(";"));
+        ProxyServer.getInstance().getLogger().info(message);
         sendMessage(MessageType.UPDATE_USERS, message);
     }
 
@@ -138,17 +145,20 @@ public class MessagingManager {
     public void startListening() {
 
         DeliverCallback callback = (consumerTag, message) -> {
+            try {
+                Pair<MessageType, String> result = processId(message);
 
-            Pair<MessageType, String> result = processId(message);
+                if (result == null)
+                    return;
 
-            if (result == null)
-                return;
+                MessageType type = result.getKey();
+                String serverId = result.getValue();
 
-            MessageType type = result.getKey();
-            String serverId = result.getValue();
-
-            String content = new String(message.getBody(), StandardCharsets.UTF_8);
-            type.dispatch(plugin, content, serverId);
+                String content = new String(message.getBody(), StandardCharsets.UTF_8);
+                type.dispatch(plugin, content, serverId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         };
 
         String queueName;

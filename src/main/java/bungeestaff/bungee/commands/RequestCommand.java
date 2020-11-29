@@ -24,9 +24,6 @@ public class RequestCommand extends CommandBase {
     public void onCommand(CommandSender sender, String[] args) {
         ProxiedPlayer player = (ProxiedPlayer) sender;
 
-        if (args.length < 2)
-            return;
-
         StringBuilder message = new StringBuilder();
         Arrays.stream(args).skip(1).forEach(str -> message.append(" ").append(str));
 
@@ -51,9 +48,9 @@ public class RequestCommand extends CommandBase {
             String format = plugin.getListMessage("Request-Module.Request-Broadcast");
 
             plugin.getStaffManager().sendRawMessage(format
-                                .replace("%player_server%", player.getServer().getInfo().getName())
-                                .replace("%player%", player.getName())
-                                .replace("%reason%", message.toString()), MessageType.STAFF);
+                    .replace("%player_server%", player.getServer().getInfo().getName())
+                    .replace("%player%", player.getName())
+                    .replace("%reason%", message.toString()), MessageType.STAFF);
         }
     }
 }
