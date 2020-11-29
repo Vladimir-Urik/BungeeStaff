@@ -9,8 +9,6 @@ Custom-Permissions:
   Staff-Follow: 'bstaff.follow'
   Staff-List: 'bstaff.stafflist'
   Broadcast-Command: 'bstaff.broadcast'
-  Server-Switch: 'bstaff.serverswitch'
-  Server-Switch-Notify: 'bstaff.serverswitch.notify'
 
 Use-Tab-Completion: true
 
