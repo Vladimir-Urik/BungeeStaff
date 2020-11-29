@@ -3,9 +3,10 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'java'
     id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-archivesBaseName = 'BungeeStaff'
+archivesBaseName = 'original-BungeeStaff'
 group 'bungeestaff.bungee'
 sourceCompatibility = '8'
 version '3.0.0'
@@ -16,6 +17,13 @@ def mainClass = project.property("group") + "." + pluginName + "Plugin"
 repositories {
     mavenLocal()
     mavenCentral()
+}
+
+shadowJar {
+    archiveBaseName.set(pluginName)
+    archiveClassifier.set('')
+    archiveVersion.set(project.property("version").toString())
+    relocate('com.rabbitmq', project.property("group").toString() + ".rabbit")
 }
 
 processResources {
@@ -38,6 +46,8 @@ dependencies {
     compile 'org.jetbrains:annotations:19.0.0'
 
     compileOnly 'net.md-5:bungeecord-api:1.16-R0.3'
+
+    compile 'com.rabbitmq:amqp-client:5.10.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
