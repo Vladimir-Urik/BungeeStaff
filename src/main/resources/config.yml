@@ -22,9 +22,6 @@ Cooldowns:
   Request: 60
   Report: 60
 
-Broadcast:
-  Use-Broadcast: true
-
 Defaults:
   Staff-Messages: true
 

@@ -1,0 +1,21 @@
+# Broadcast format configuration for @name@
+#
+# Version: @version@
+
+general:
+  # Placeholders are filled from the broadcast command.
+  # ex.: Using %message%, the command would be
+  # /broadcast general message='Hello world!'
+  # You can use multiple placeholders
+  # /broadcast general message='Hello world!' target='owner'
+  # They can contain line separators '\n' to create a new line.
+  format:
+    - '&8&m        &a Announcement &8&m        '
+    - '%message%'
+    - '&8&m                              '
+
+basic:
+  format:
+    - '%header%'
+    - '%message%'
+    - '%footer%'

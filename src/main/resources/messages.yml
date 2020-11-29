@@ -11,7 +11,7 @@ General:
   Only-Player: '&cThis command has to be executed in-game.'
   Player-Offline: '&cRequest player is offline.'
   Invalid-User: '&cStaff user invalid.'
-  No-Permission: '&4&lError: &cYou do not have permission for this command!'
+  No-Permission: '&cYou do not have permission for this command!'
   Not-Enough-Arguments: '&cNot enough arguments.'
   Too-Many-Arguments: '&cToo many arguments.'
 
@@ -21,15 +21,17 @@ BungeeStaff-Module:
     - '&cToo few arguments'
     - '&cUsage: /bungeestaff <help>'
   Help:
-    - '&a&lBungeeStaff Help:'
-    - '&2/bungeestaff reload &8- &7Reload the config modules'
-    - '&2/bungeestaff group &8- &7BungeeStaff grouping system'
-    - '&2/staffchat(sc) &8- &7Toggles Staff Chat'
-    - '&2/report <Player> &8- &7Report a player to staff'
-    - '&2/request(helpop) <Message> &8- &7Request assistance'
-    - '&2/togglestaffmessages(tsm) &8- &7Toggle staff messages'
-    - '&2/stafflist(slist) &8- &7View all online staff members!'
-    - '&2/broadcast(announce) &8- &7Broadcast an announcement!'
+    - '&8&m       &3 BungeeStaff &8&m       '
+    - '&3/bstaff reload &8- &7Reload the plugin.'
+    - '&3/bstaff add <player> <rank> &8- &7Make player a staff member.'
+    - '&3/bstaff remove <player> &8- &7Remove player from staff.'
+    - '&3/bstaff ranks &8- &7List configured ranks.'
+    - '&3/staffchat&7[sc] &8- &7Toggles Staff Chat'
+    - '&3/report <player> <message> &8- &7Report a player to staff.'
+    - '&3/request&7[helpop] &3<message> &8- &7Request assistance.'
+    - '&3/togglestaffmessages&7[tsm] &8- &7Toggle staff messages.'
+    - '&3/stafflist&7[slist] &8- &7View all online staff members.'
+    - '&3/broadcast&7[announce] <message> &8- &7Broadcast an message.'
   No-Such-Argument:
     - '&cIncorrect usage'
     - '&cUsage: /bungeestaff <help>'
@@ -108,15 +110,6 @@ Staff-List:
     - '&7Staff:'
   Footer:
     - '&8&m                             '
-
-Broadcast-Module:
-  No-Argument:
-    - '&cToo few arguments'
-    - '&cUsage: /broadcast <Reason>'
-  Message:
-    - '&f'
-    - '&8[&c&l!&4&lAnnouncement&c&l!&8] &7(%player_server%) %prefix%%player%: &b%message%'
-    - '&f'
 
 Server-Switch-Module:
   First-Join: '&8[&4&lS&8] %prefix%%player% &5joined &8(&d%server%&8)'

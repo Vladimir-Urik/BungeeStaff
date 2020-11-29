@@ -3,6 +3,7 @@ package bungeestaff.bungee;
 import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.listeners.*;
+import bungeestaff.bungee.system.broadcast.BroadcastManager;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
 import bungeestaff.bungee.system.staff.StaffManager;
@@ -35,6 +36,8 @@ public class BungeeStaffPlugin extends Plugin {
     private RankManager rankManager;
     @Getter
     private CooldownManager cooldownManager;
+    @Getter
+    private BroadcastManager broadcastManager;
 
     @Override
     public void onEnable() {
@@ -54,7 +57,9 @@ public class BungeeStaffPlugin extends Plugin {
         this.rankManager = new RankManager(this);
 
         this.cooldownManager = new CooldownManager(this);
+        this.broadcastManager = new BroadcastManager(this);
 
+        broadcastManager.load();
         cooldownManager.load();
 
         rankManager.load();
@@ -69,6 +74,7 @@ public class BungeeStaffPlugin extends Plugin {
         config.load();
         messages.load();
 
+        broadcastManager.load();
         rankManager.load();
 
         TextUtil.sendMessage(sender, getMessages().getString("BungeeStaff-Module.Reload")
@@ -88,10 +94,8 @@ public class BungeeStaffPlugin extends Plugin {
                 new ReportCommand(this),
                 new ToggleCommand(this),
                 new StaffFollowCommand(this),
-                new StaffListCommand(this));
-
-        if (getConfig().getBoolean("Broadcast.Use-Broadcast"))
-            registerCommands(new BroadcastCommand(this));
+                new StaffListCommand(this),
+                new BroadcastCommand(this));
 
         if (getConfig().getBoolean("Use-Tab-Completion")) {
             new TabCompleteListener(this).register();

@@ -1,10 +1,10 @@
 package bungeestaff.bungee.commands.framework;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.util.TextUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ public abstract class AbstractCommand extends Command {
 
                 String[] cutArgs = Arrays.copyOfRange(args, 1, args.length);
 
-                subCommand.getExecutor().onCommand(sender, cutArgs);
+                subCommand.execute(sender, cutArgs);
                 return false;
             }
 
@@ -80,14 +80,17 @@ public abstract class AbstractCommand extends Command {
     }
 
     protected boolean checkRange(CommandSender sender, @Nullable Range range, int length) {
+        ProxyServer.getInstance().getLogger().info("" + (range == null));
         if (range != null) {
             int res = range.check(length);
 
+            ProxyServer.getInstance().getLogger().info(range.toString() + " = " + res);
+
             if (res == -1) {
-                TextUtil.sendMessage(sender, plugin.getMessages().getString("General.Not-Enough-Arguments"));
+                plugin.sendLineMessage("General.Not-Enough-Arguments", sender);
                 return false;
             } else if (res == 1) {
-                TextUtil.sendMessage(sender, plugin.getMessages().getString("General.Too-Many-Arguments"));
+                plugin.sendLineMessage("General.Too-Many-Arguments", sender);
                 return false;
             }
         }

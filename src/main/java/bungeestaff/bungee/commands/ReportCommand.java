@@ -30,7 +30,7 @@ public class ReportCommand extends CommandBase {
         ProxiedPlayer player = (ProxiedPlayer) sender;
 
         StringBuilder reason = new StringBuilder();
-        Arrays.stream(args).skip(1).forEach(reason::append);
+        Arrays.stream(args).skip(1).forEach(str -> reason.append(" ").append(str));
 
         ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
 

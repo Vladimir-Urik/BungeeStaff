@@ -27,7 +27,7 @@ public class RequestCommand extends CommandBase {
             return;
 
         StringBuilder message = new StringBuilder();
-        Arrays.stream(args).skip(1).forEach(message::append);
+        Arrays.stream(args).skip(1).forEach(str -> message.append(" ").append(str));
 
         if (!plugin.getCooldownManager().trigger(CooldownType.REQUEST, player.getUniqueId())) {
             TextUtil.sendMessage(player, plugin.getLineMessage("Request-Module.Request-Cooldown-Message")

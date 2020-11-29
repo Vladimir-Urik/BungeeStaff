@@ -65,7 +65,7 @@ public class CoreCommand extends CommandBase {
 
         withSubCommand("ranks")
                 .withExecutor((sender, args) -> {
-                    StringBuilder message = new StringBuilder("&8&m        &3 Ranks &8&m        ");
+                    StringBuilder message = new StringBuilder("&8&m          &3 Ranks &8&m          ");
                     for (Rank rank : plugin.getRankManager().getRanks()) {
                         Set<StaffUser> users = plugin.getStaffManager().getUsers(u -> rank.equals(u.getRank()));
                         message.append("\n&8 - &e").append(rank.getName());

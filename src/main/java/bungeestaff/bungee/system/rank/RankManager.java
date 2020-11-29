@@ -5,8 +5,8 @@ import bungeestaff.bungee.configuration.Config;
 import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,7 +14,7 @@ public class RankManager {
 
     private final BungeeStaffPlugin plugin;
 
-    private final Map<String, Rank> ranks = new HashMap<>();
+    private final Map<String, Rank> ranks = new LinkedHashMap<>();
 
     @Getter
     private final Config config;
