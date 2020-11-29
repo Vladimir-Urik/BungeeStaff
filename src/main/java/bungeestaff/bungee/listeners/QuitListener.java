@@ -24,7 +24,8 @@ public class QuitListener extends EventListener {
 
         user.setOnline(false);
 
-        plugin.getMessagingManager().removeUser(player.getName());
+        plugin.getMessagingService().getUserCache().removeUser(player.getName());
+        plugin.getMessagingService().sendStaffQuit(user);
 
         plugin.getStaffManager().sendRawMessage(plugin.getMessage("Staff-Messages.Staff-Leave")
                 .replace("%server_from%", player.getServer().getInfo().getName())

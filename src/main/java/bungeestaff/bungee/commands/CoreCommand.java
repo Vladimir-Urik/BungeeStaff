@@ -44,7 +44,7 @@ public class CoreCommand extends CommandBase {
                         }
                     }
 
-                    plugin.getStaffManager().addUser(player, rank);
+                    plugin.getStaffManager().addUser(player, rank, true);
                     plugin.sendMessage(sender, "BungeeStaff-Module.User-Added");
                 })
                 .withRange(1, 2);
@@ -58,7 +58,7 @@ public class CoreCommand extends CommandBase {
                         return;
                     }
 
-                    plugin.getStaffManager().removeUser(user);
+                    plugin.getStaffManager().removeUser(user, true);
                     plugin.sendMessage(sender, "BungeeStaff-Module.User-Removed");
                 })
                 .withRange(1);

@@ -3,8 +3,8 @@ package bungeestaff.bungee;
 import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.listeners.*;
-import bungeestaff.bungee.rabbit.CachedUser;
-import bungeestaff.bungee.rabbit.MessagingManager;
+import bungeestaff.bungee.rabbit.MessagingService;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.broadcast.BroadcastManager;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
@@ -41,7 +41,7 @@ public class BungeeStaffPlugin extends Plugin {
     private BroadcastManager broadcastManager;
 
     @Getter
-    private MessagingManager messagingManager;
+    private MessagingService messagingService;
 
     @Override
     public void onEnable() {
@@ -57,11 +57,6 @@ public class BungeeStaffPlugin extends Plugin {
         this.messages = new Config(this, "messages");
         messages.load();
 
-        if (getConfig().getBoolean("Rabbit.Enabled", false)) {
-            this.messagingManager = new MessagingManager(this);
-            messagingManager.initialize();
-        }
-
         this.staffManager = new StaffManager(this);
         this.rankManager = new RankManager(this);
 
@@ -73,6 +68,11 @@ public class BungeeStaffPlugin extends Plugin {
 
         rankManager.load();
         staffManager.load();
+
+        if (getConfig().getBoolean("Rabbit.Enabled", false)) {
+            this.messagingService = new MessagingService(this);
+            messagingService.initialize();
+        }
 
         registerCommands();
     }
@@ -172,8 +172,8 @@ public class BungeeStaffPlugin extends Plugin {
     }
 
     public Set<CachedUser> getUsers() {
-        Set<CachedUser> users = messagingManager.getUsers();
-        getProxy().getPlayers().forEach(p -> users.add(new CachedUser(p.getName(), p.getServer().getInfo().getName())));
+        Set<CachedUser> users = messagingService.getUserCache().getUsers();
+        getProxy().getPlayers().forEach(p -> users.add(new CachedUser(p)));
         return users;
     }
 

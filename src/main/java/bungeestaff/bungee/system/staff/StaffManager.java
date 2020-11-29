@@ -67,7 +67,7 @@ public class StaffManager {
             user.setStaffChat(section.getBoolean(key + ".staff-chat", false));
             user.setStaffMessages(section.getBoolean(key + ".staff-messages", plugin.getConfig().getBoolean("Defaults.staff-messages", false)));
 
-            this.users.put(uniqueID, user);
+            addUser(user, false);
         }
         plugin.getLogger().info("Loaded " + this.users.size() + " staff user(s)...");
     }
@@ -106,23 +106,29 @@ public class StaffManager {
                 .findAny().orElse(null);
     }
 
-    public void addUser(StaffUser user) {
+    public void addUser(StaffUser user, boolean sync) {
         this.users.put(user.getUniqueID(), user);
+
+        if (sync)
+            plugin.getMessagingService().sendStaffAdd(user);
     }
 
-    public void addUser(ProxiedPlayer player, Rank rank) {
+    public void addUser(ProxiedPlayer player, Rank rank, boolean sync) {
         StaffUser user = new StaffUser(player.getUniqueId(), rank);
 
         user.setName(player.getName());
         user.setOnline(player.isConnected());
 
-        addUser(user);
+        addUser(user, sync);
 
         user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
     }
 
-    public void removeUser(StaffUser user) {
+    public void removeUser(StaffUser user, boolean sync) {
         this.users.remove(user.getUniqueID());
+
+        if (sync)
+            plugin.getMessagingService().sendStaffRemove(user.getName());
     }
 
     public Set<StaffUser> getUsers() {
@@ -135,19 +141,27 @@ public class StaffManager {
                 .collect(Collectors.toSet());
     }
 
+    public void importUsers(Set<StaffUser> users) {
+        users.forEach(u -> addUser(u, false));
+    }
+
     /**
-     * Send message to online staff.
+     * Send message to online players.
      */
     public void sendRawMessage(String message, @Nullable MessageType type) {
 
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
 
-        // To players online
-        getUsers(u -> u.isOnline() && u.isStaffMessages()).forEach(u -> TextUtil.sendMessage(u.asPlayer(), message));
+        if (type == MessageType.STAFF)
+            // To staff online
+            getUsers().forEach(u -> u.sendStaffMessage(message));
+        else if (type == MessageType.PUBLIC)
+            // To all players online
+            plugin.getProxy().getPlayers().forEach(p -> TextUtil.sendMessage(p, message));
 
         if (type != null)
-            plugin.getMessagingManager().sendMessage(type, message);
+            plugin.getMessagingService().sendMessage(type, message);
     }
 
     /**
@@ -156,6 +170,9 @@ public class StaffManager {
     public void sendStaffMessage(StaffUser author, String message) {
 
         ProxiedPlayer player = author.asPlayer();
+
+        if (player == null)
+            return;
 
         String prefix = plugin.getPrefix(player);
 

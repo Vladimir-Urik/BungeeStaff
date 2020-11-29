@@ -1,22 +1,25 @@
 package bungeestaff.bungee.rabbit;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import com.google.common.base.Strings;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
+import bungeestaff.bungee.rabbit.cache.UserCache;
+import bungeestaff.bungee.system.Pair;
+import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.util.ParseUtil;
 import com.rabbitmq.client.*;
-import lombok.Data;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-public class MessagingManager {
+public class MessagingService {
 
     public static final String EXCHANGE = "bungee-staff";
 
@@ -24,70 +27,16 @@ public class MessagingManager {
 
     private final String serverId = UUID.randomUUID().toString();
 
+    @Getter
+    private final UserCache userCache;
+
     private Channel channel;
 
-    private final Map<String, Set<CachedUser>> fetchedUsers = new HashMap<>();
+    private ScheduledTask updateTask;
 
-    public MessagingManager(BungeeStaffPlugin plugin) {
+    public MessagingService(BungeeStaffPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    public CachedUser getUser(String name) {
-        return getUsers().stream()
-                .filter(u -> u.getName().equals(name))
-                .findAny().orElse(null);
-    }
-
-    public Set<CachedUser> getUsers() {
-        Set<CachedUser> total = new HashSet<>();
-        this.fetchedUsers.keySet().forEach(c -> total.addAll(getUsers(c)));
-        return total;
-    }
-
-    public Set<CachedUser> getUsers(String serverId) {
-        if (fetchedUsers.containsKey(serverId))
-            return fetchedUsers.get(serverId);
-
-        Set<CachedUser> users = new HashSet<>();
-        fetchedUsers.put(serverId, users);
-        return users;
-    }
-
-    public void addUser(ProxiedPlayer player) {
-        getUsers(serverId).add(new CachedUser(player.getName(), player.getServer().getInfo().getName()));
-    }
-
-    public void updateUsers(String serverId, Collection<CachedUser> users) {
-        this.fetchedUsers.put(serverId, new HashSet<>(users));
-    }
-
-    public void removeUser(String user) {
-        this.fetchedUsers.values().forEach(list -> list.removeIf(p -> p.getName().equals(user)));
-    }
-
-    public void processUserUpdate(String serverId, String message) {
-
-        if (Strings.isNullOrEmpty(message))
-            return;
-
-        Set<CachedUser> users = new HashSet<>();
-        for (String arg : message.trim().split(";")) {
-            String[] arr = arg.trim().split("=");
-
-            String name = arr[0];
-            String server = arr[1];
-
-            users.add(new CachedUser(name, server));
-        }
-        updateUsers(serverId, users);
-    }
-
-    public void sendUserUpdate() {
-        String message = plugin.getProxy().getPlayers().stream()
-                .map(player -> player.getName() + "=" + player.getServer().getInfo().getName())
-                .collect(Collectors.joining(";"));
-        ProxyServer.getInstance().getLogger().info(message);
-        sendMessage(MessageType.UPDATE_USERS, message);
+        this.userCache = new UserCache(serverId);
     }
 
     public void initialize() {
@@ -112,9 +61,9 @@ public class MessagingManager {
 
         startListening();
         startUserUpdates();
-    }
 
-    private ScheduledTask updateTask;
+        sendStaffUpdate();
+    }
 
     public void startUserUpdates() {
         int interval = plugin.getConfig().getInt("Rabbit.User-Update-Interval", 10);
@@ -125,10 +74,36 @@ public class MessagingManager {
         this.updateTask = plugin.getProxy().getScheduler().schedule(plugin, this::sendUserUpdate, 1, interval, TimeUnit.SECONDS);
     }
 
-    @Data
-    private static class Pair<X, Y> {
-        private final X key;
-        private final Y value;
+    public void sendUserUpdate() {
+        String message = plugin.getProxy().getPlayers().stream()
+                .map(CachedUser::serializeFrom)
+                .collect(Collectors.joining(","));
+        sendMessage(MessageType.UPDATE_USERS, message);
+    }
+
+    public void sendStaffAdd(StaffUser user) {
+        sendMessage(MessageType.STAFF_ADD, user.serialize());
+    }
+
+    public void sendStaffRemove(String name) {
+        sendMessage(MessageType.STAFF_REMOVE, name);
+    }
+
+    public void sendStaffJoin(StaffUser user) {
+        String str = user.getName();
+        sendMessage(MessageType.STAFF_JOIN, str);
+    }
+
+    public void sendStaffQuit(StaffUser user) {
+        String str = user.getName();
+        sendMessage(MessageType.STAFF_LEAVE, str);
+    }
+
+    // Initial staff list update
+    public void sendStaffUpdate() {
+        Set<StaffUser> local = plugin.getStaffManager().getUsers();
+        String str = ParseUtil.serializeCollection(local);
+        sendMessage(MessageType.UPDATE_STAFF, str);
     }
 
     private Pair<MessageType, String> processId(Delivery message) {
@@ -136,6 +111,7 @@ public class MessagingManager {
 
         String[] arr = messageId.split(";");
 
+        // Only accept messages that are not send from us.
         if (arr.length < 2 || serverId.equals(arr[1]))
             return null;
 

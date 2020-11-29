@@ -1,7 +1,7 @@
 package bungeestaff.bungee.listeners;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.rabbit.CachedUser;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import net.md_5.bungee.api.event.TabCompleteEvent;
 import net.md_5.bungee.event.EventHandler;
 

@@ -25,7 +25,8 @@ public class JoinListener extends EventListener {
         user.setOnline(true);
         user.setName(player.getName());
 
-        plugin.getMessagingManager().addUser(player);
+        plugin.getMessagingService().getUserCache().addUser(player);
+        plugin.getMessagingService().sendStaffJoin(user);
 
         plugin.getStaffManager().sendRawMessage(plugin.getMessages().getString("Staff-Messages.Staff-Join")
                         .replace("%player%", player.getName())

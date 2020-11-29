@@ -10,7 +10,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class TextUtil {
 
     public void sendMessage(CommandSender sender, String message) {
-        if (!Strings.isNullOrEmpty(message))
+        if (!Strings.isNullOrEmpty(message) && sender != null)
             sender.sendMessage(format(message));
     }
 

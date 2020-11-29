@@ -2,7 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
-import bungeestaff.bungee.rabbit.CachedUser;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.util.TextUtil;
@@ -39,7 +39,7 @@ public class ReportCommand extends CommandBase {
 
         if (target == null) {
             // Try to fetch cached user from Rabbit
-            user = plugin.getMessagingManager().getUser(args[0]);
+            user = plugin.getMessagingService().getUser(args[0]);
 
             if (user == null) {
                 plugin.sendMessage(sender, "Report-Module.Player-Not-Found");
@@ -82,7 +82,7 @@ public class ReportCommand extends CommandBase {
             sendJson(message);
 
             // Rabbit message
-            plugin.getMessagingManager().sendMessage(MessageType.STAFF, format
+            plugin.getMessagingService().sendMessage(MessageType.STAFF, format
                     .replace("%reporter_server%", player.getServer().getInfo().getName())
                     .replace("%reporter%", player.getName())
                     .replace("%reported%", user.getName())
