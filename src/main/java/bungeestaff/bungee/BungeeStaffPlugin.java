@@ -20,6 +20,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -146,8 +147,13 @@ public class BungeeStaffPlugin extends Plugin {
      * Get line or list message.
      */
     public String getMessage(String key) {
-        String message = getMessages().getString(key);
-        return TextUtil.color(message == null ? String.join("\n&r", getMessages().getStringList(key)) : message);
+        Object obj = getMessages().get(key);
+        String message = null;
+        if (obj instanceof String)
+            message = (String) obj;
+        else if (obj instanceof List<?>)
+            message = String.join("\n&r", getMessages().getStringList(key));
+        return TextUtil.color(message);
     }
 
     @NotNull

@@ -39,7 +39,7 @@ public class ReportCommand extends CommandBase {
 
         if (target == null) {
             // Try to fetch cached user from Rabbit
-            user = plugin.getMessagingService().getUser(args[0]);
+            user = plugin.getMessagingService().getUserCache().getUser(args[0]);
 
             if (user == null) {
                 plugin.sendMessage(sender, "Report-Module.Player-Not-Found");

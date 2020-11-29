@@ -34,7 +34,8 @@ public class ParseUtil {
         Set<T> out = new HashSet<>();
         for (String arg : input.split(",")) {
             T obj = deserializer.apply(arg);
-            out.add(obj);
+            if (obj != null)
+                out.add(obj);
         }
         return out;
     }

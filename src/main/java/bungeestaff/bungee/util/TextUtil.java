@@ -19,6 +19,6 @@ public class TextUtil {
     }
 
     public String color(String message) {
-        return message == null ? null : ChatColor.translateAlternateColorCodes('&', message);
+        return message == null ? "" : ChatColor.translateAlternateColorCodes('&', message);
     }
 }
