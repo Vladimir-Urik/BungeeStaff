@@ -19,10 +19,7 @@ public class ChatListener extends EventListener {
 
         StaffUser user = plugin.getStaffManager().getUser(player);
 
-        if (user == null)
-            return;
-
-        if (!user.isStaffChat() || event.getMessage().startsWith("/"))
+        if (user == null || !user.isStaffChat() || event.getMessage().startsWith("/"))
             return;
 
         event.setCancelled(true);

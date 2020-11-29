@@ -46,6 +46,6 @@ public class ConnectionListener extends EventListener {
                     .replace("%prefix%", prefix);
         }
 
-        plugin.getStaffManager().sendRawMessage(message, MessageType.STAFF);
+        plugin.getStaffManager().sendMessage(message, MessageType.STAFF);
     }
 }

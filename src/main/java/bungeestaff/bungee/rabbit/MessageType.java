@@ -12,7 +12,7 @@ import java.util.Set;
 public enum MessageType {
 
     STAFF((plugin, message, serverId) -> {
-        plugin.getStaffManager().sendRawMessage(message, null);
+        plugin.getStaffManager().sendMessage(message);
     }),
 
     PUBLIC((plugin, message, serverId) -> {
@@ -37,6 +37,7 @@ public enum MessageType {
         if (user == null)
             return;
         user.setOnline(true);
+        //TODO send the message
     }),
 
     STAFF_LEAVE((plugin, message, serverId) -> {

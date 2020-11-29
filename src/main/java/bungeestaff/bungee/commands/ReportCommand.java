@@ -90,7 +90,7 @@ public class ReportCommand extends CommandBase {
                     .replace("%reported_server%", user.getServer())
                     .replace("%reason%", reason));
         } else
-            plugin.getStaffManager().sendRawMessage(format
+            plugin.getStaffManager().sendMessage(format
                     .replace("%reporter_server%", player.getServer().getInfo().getName())
                     .replace("%reporter%", player.getName())
                     .replace("%reported%", user.getName())

@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -158,9 +159,9 @@ public class StaffManager {
     }
 
     /**
-     * Send message to online players.
+     * Send message to online staff/players and sync over rabbit.
      */
-    public void sendRawMessage(String message, @Nullable MessageType type) {
+    public void sendMessage(String message, @NotNull MessageType type) {
 
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
@@ -172,28 +173,29 @@ public class StaffManager {
             // To all players online
             plugin.getProxy().getPlayers().forEach(p -> TextUtil.sendMessage(p, message));
 
-        if (type != null)
-            plugin.getMessagingService().sendMessage(type, message);
+        plugin.getMessagingService().sendMessage(type, message);
+    }
+
+    /**
+     * Send message to online staff.
+     */
+    public void sendMessage(String message) {
+        // Send one to console
+        TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
+
+        getUsers().forEach(u -> u.sendStaffMessage(message));
     }
 
     /**
      * Format and send a message to staff chat.
      */
     public void sendStaffMessage(StaffUser author, String message) {
-
-        ProxiedPlayer player = author.asPlayer();
-
-        if (player == null)
-            return;
-
-        String prefix = plugin.getPrefix(player);
-
         String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
-                .replace("%server%", player.getServer().getInfo().getName())
-                .replace("%player%", player.getName())
+                .replace("%server%", author.getServer())
+                .replace("%player%", author.getName())
                 .replace("%message%", message)
-                .replace("%prefix%", prefix);
+                .replace("%prefix%", plugin.getPrefix(author));
 
-        sendRawMessage(wholeMessage, MessageType.STAFF);
+        sendMessage(wholeMessage, MessageType.STAFF);
     }
 }

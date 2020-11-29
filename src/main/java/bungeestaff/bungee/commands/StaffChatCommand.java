@@ -43,6 +43,6 @@ public class StaffChatCommand extends CommandBase {
                 .replace("%rank%", player == null ? "System" : user.getRank().getName())
                 .replace("%message%", message.toString());
 
-        plugin.getStaffManager().sendRawMessage(wholeMessage, MessageType.STAFF);
+        plugin.getStaffManager().sendMessage(wholeMessage, MessageType.STAFF);
     }
 }

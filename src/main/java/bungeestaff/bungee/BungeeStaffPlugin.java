@@ -76,6 +76,7 @@ public class BungeeStaffPlugin extends Plugin {
         }
 
         registerCommands();
+        TextUtil.sendMessage(console, "&8&m                        ");
     }
 
     public void reload(CommandSender sender) {
@@ -162,9 +163,14 @@ public class BungeeStaffPlugin extends Plugin {
     }
 
     @NotNull
+    public String getPrefix(StaffUser user) {
+        return user == null || user.getRank() == null || user.getRank().getPrefix() == null ? getConfig().getString("No-Rank") : user.getRank().getPrefix();
+    }
+
+    @NotNull
     public String getPrefix(UUID uniqueID) {
         StaffUser user = staffManager.getUser(uniqueID);
-        return user == null || user.getRank() == null || user.getRank().getPrefix() == null ? getConfig().getString("No-Rank") : user.getRank().getPrefix();
+        return getPrefix(user);
     }
 
     /**

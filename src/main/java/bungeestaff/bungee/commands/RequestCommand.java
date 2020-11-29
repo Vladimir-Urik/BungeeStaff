@@ -36,7 +36,7 @@ public class RequestCommand extends CommandBase {
 
         String format = plugin.getMessage("Request-Module.Request-Broadcast");
 
-        plugin.getStaffManager().sendRawMessage(format
+        plugin.getStaffManager().sendMessage(format
                 .replace("%player_server%", player.getServer().getInfo().getName())
                 .replace("%player%", player.getName())
                 .replace("%reason%", message.toString()), MessageType.STAFF);
