@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -45,5 +46,14 @@ public class ParseUtil {
         return collection.stream()
                 .map(Serializable::serialize)
                 .collect(Collectors.joining(","));
+    }
+
+    public <T> T orNull(Supplier<T> supplier, T def) {
+        try {
+            T obj = supplier.get();
+            return obj == null ? def : obj;
+        } catch (Exception e) {
+            return def;
+        }
     }
 }

@@ -61,8 +61,13 @@ public class StaffManager {
             if (player != null) {
                 if (Strings.isNullOrEmpty(name))
                     name = player.getName();
-                if (player.isConnected())
+
+                if (player.isConnected()) {
                     user.setOnline(true);
+
+                    if (player.getServer() != null)
+                        user.setServer(player.getServer().getInfo().getName());
+                }
             }
 
             user.setName(name);

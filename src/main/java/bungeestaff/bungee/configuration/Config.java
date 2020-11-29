@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Config {
 
@@ -63,9 +61,12 @@ public class Config {
     }
 
     public void delete() {
-        Path path = Paths.get(plugin.getDataFolder().getPath(), name);
+
+        if (!file.exists())
+            return;
+
         try {
-            Files.delete(path);
+            Files.delete(file.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
