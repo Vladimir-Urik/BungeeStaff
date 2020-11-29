@@ -2,6 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
+import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.util.TextUtil;
@@ -53,6 +54,7 @@ public class ReportCommand extends CommandBase {
         plugin.sendLineMessage("Report-Module.Report-Sent", sender);
 
         for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
+
             if (!plugin.hasCustomPermission("Report-Notify", loopPlayer))
                 continue;
 
@@ -61,10 +63,10 @@ public class ReportCommand extends CommandBase {
             if (loopUser == null || !loopUser.isOnline() || !loopUser.isStaffMessages())
                 continue;
 
-            String broadcast = plugin.getListMessage("Report-Module.Report-Broadcast");
+            String format = plugin.getListMessage("Report-Module.Report-Broadcast");
 
             if (plugin.getMessages().getBoolean("Report-Module.Report-Clickable")) {
-                TextComponent message = TextUtil.format(broadcast
+                TextComponent message = TextUtil.format(format
                         .replace("%reporter_server%", player.getServer().getInfo().getName())
                         .replace("%reporter%", player.getName())
                         .replace("%reported%", target.getName())
@@ -81,13 +83,21 @@ public class ReportCommand extends CommandBase {
 
                 loopPlayer.sendMessage(message);
             } else {
-                TextUtil.sendMessage(loopPlayer, broadcast
+                TextUtil.sendMessage(loopPlayer, format
                         .replace("%reporter_server%", player.getServer().getInfo().getName())
                         .replace("%reporter%", player.getName())
                         .replace("%reported%", target.getName())
                         .replace("%reported_server%", target.getServer().getInfo().getName())
                         .replace("%reason%", reason));
             }
+
+            // Send the message over Rabbit
+            plugin.getMessagingManager().sendMessage(MessageType.REPORT, format
+                    .replace("%reporter_server%", player.getServer().getInfo().getName())
+                    .replace("%reporter%", player.getName())
+                    .replace("%reported%", target.getName())
+                    .replace("%reported_server%", target.getServer().getInfo().getName())
+                    .replace("%reason%", reason));
         }
     }
 }

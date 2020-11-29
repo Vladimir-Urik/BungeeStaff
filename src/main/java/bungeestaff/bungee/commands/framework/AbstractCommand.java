@@ -59,6 +59,8 @@ public abstract class AbstractCommand extends Command {
 
                 String[] cutArgs = Arrays.copyOfRange(args, 1, args.length);
 
+                ProxyServer.getInstance().getLogger().info(Arrays.toString(cutArgs));
+
                 subCommand.execute(sender, cutArgs);
                 return false;
             }

@@ -2,6 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
+import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.cooldown.CooldownType;
 import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.util.TextUtil;
@@ -49,10 +50,10 @@ public class RequestCommand extends CommandBase {
 
             String format = plugin.getListMessage("Request-Module.Request-Broadcast");
 
-            TextUtil.sendMessage(loopPlayer, format
-                    .replace("%player_server%", player.getServer().getInfo().getName())
-                    .replace("%player%", player.getName())
-                    .replace("%reason%", message.toString()));
+            plugin.getStaffManager().sendRawMessage(format
+                                .replace("%player_server%", player.getServer().getInfo().getName())
+                                .replace("%player%", player.getName())
+                                .replace("%reason%", message.toString()), MessageType.REQUEST);
         }
     }
 }

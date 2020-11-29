@@ -2,12 +2,11 @@ package bungeestaff.bungee.system.broadcast;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.configuration.Config;
+import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.util.TextUtil;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BroadcastManager {
@@ -30,9 +29,8 @@ public class BroadcastManager {
         Configuration section = config.getConfiguration();
 
         for (String name : section.getKeys()) {
-            List<String> lines = section.getStringList(name + ".format");
             BroadcastFormat format = new BroadcastFormat(name);
-            format.setLines(lines);
+            format.setLines(section.getStringList(name + ".format"));
             formats.put(name, format);
         }
         plugin.getLogger().info("Loaded " + formats.size() + " broadcast format(s)...");
@@ -42,11 +40,16 @@ public class BroadcastManager {
         return this.formats.get(name);
     }
 
-    public void broadcast(BroadcastFormat format, PlaceholderContainer placeholders) {
-        String message = placeholders.parse(String.join("\n", format.getLines()));
+    public void broadcastRaw(String message, boolean send) {
+        plugin.getProxy().getPlayers().forEach(player -> TextUtil.sendMessage(player, message));
 
-        for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-            TextUtil.sendMessage(player, message);
-        }
+        if (send)
+            plugin.getMessagingManager().sendMessage(MessageType.BROADCAST, message);
+    }
+
+    public void broadcast(BroadcastFormat format, PlaceholderContainer placeholders) {
+        String message = placeholders.parse(String.join("\n&r", format.getLines()));
+
+        broadcastRaw(message, true);
     }
 }

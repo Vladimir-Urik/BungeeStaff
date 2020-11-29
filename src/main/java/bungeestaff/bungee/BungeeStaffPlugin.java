@@ -3,6 +3,7 @@ package bungeestaff.bungee;
 import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.listeners.*;
+import bungeestaff.bungee.rabbit.MessagingManager;
 import bungeestaff.bungee.system.broadcast.BroadcastManager;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
@@ -39,6 +40,9 @@ public class BungeeStaffPlugin extends Plugin {
     @Getter
     private BroadcastManager broadcastManager;
 
+    @Getter
+    private MessagingManager messagingManager;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -52,6 +56,11 @@ public class BungeeStaffPlugin extends Plugin {
         config.load();
         this.messages = new Config(this, "messages");
         messages.load();
+
+        if (getConfig().getBoolean("Rabbit.Enabled", false)) {
+            this.messagingManager = new MessagingManager(this);
+            messagingManager.initialize();
+        }
 
         this.staffManager = new StaffManager(this);
         this.rankManager = new RankManager(this);
@@ -146,7 +155,7 @@ public class BungeeStaffPlugin extends Plugin {
     }
 
     public String getListMessage(String key) {
-        return String.join("\n", getMessages().getStringList(key));
+        return String.join("\n&r", getMessages().getStringList(key));
     }
 
     public void sendListMessage(String key, CommandSender... senders) {

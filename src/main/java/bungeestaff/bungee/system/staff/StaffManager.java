@@ -2,6 +2,7 @@ package bungeestaff.bungee.system.staff;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.configuration.Config;
+import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
 import bungeestaff.bungee.util.TextUtil;
@@ -130,12 +131,16 @@ public class StaffManager {
     /**
      * Send message to online staff.
      */
-    public void sendRawStaffMessage(String message) {
+    public void sendRawMessage(String message, @Nullable MessageType type) {
+
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
 
         // To players online
         getUsers(u -> u.isOnline() && u.isStaffMessages()).forEach(u -> TextUtil.sendMessage(u.asPlayer(), message));
+
+        if (type != null)
+            plugin.getMessagingManager().sendMessage(type, message);
     }
 
     /**
@@ -153,6 +158,6 @@ public class StaffManager {
                 .replace("%message%", message)
                 .replace("%prefix%", prefix);
 
-        sendRawStaffMessage(wholeMessage);
+        sendRawMessage(wholeMessage, MessageType.STAFF_CHAT);
     }
 }

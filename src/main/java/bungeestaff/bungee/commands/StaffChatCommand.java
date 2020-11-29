@@ -2,6 +2,7 @@ package bungeestaff.bungee.commands;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
+import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -34,7 +35,7 @@ public class StaffChatCommand extends CommandBase {
         }
 
         StringBuilder message = new StringBuilder();
-        Arrays.stream(args).forEach(message::append);
+        Arrays.stream(args).forEach(str -> message.append(" ").append(str));
 
         // Replace placeholders here to override them in StaffManager#sendStaffMessage
         String wholeMessage = plugin.getLineMessage("StaffChat-Module.StaffChat-Message")
@@ -44,6 +45,6 @@ public class StaffChatCommand extends CommandBase {
                 .replace("%rank%", player == null ? "System" : user.getRank().getName())
                 .replace("%message%", message.toString());
 
-        plugin.getStaffManager().sendRawStaffMessage(wholeMessage);
+        plugin.getStaffManager().sendRawMessage(wholeMessage, MessageType.STAFF_CHAT);
     }
 }
