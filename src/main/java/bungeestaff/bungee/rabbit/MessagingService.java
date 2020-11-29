@@ -30,6 +30,7 @@ public class MessagingService {
     @Getter
     private final UserCache userCache;
 
+    private Connection connection;
     private Channel channel;
 
     private ScheduledTask updateTask;
@@ -48,7 +49,7 @@ public class MessagingService {
         factory.setPassword(plugin.getConfig().getString("Rabbit.Password"));
 
         try {
-            Connection connection = factory.newConnection();
+            this.connection = factory.newConnection();
             this.channel = connection.createChannel();
 
             channel.exchangeDeclare(EXCHANGE, "fanout");
@@ -100,6 +101,16 @@ public class MessagingService {
     public void sendStaffQuit(StaffUser user) {
         String str = user.getName();
         sendMessage(MessageType.STAFF_LEAVE, str);
+    }
+
+    public void sendStaffChatUpdate(StaffUser user, boolean state) {
+        String str = user.getName() + ";" + state;
+        sendMessage(MessageType.STAFF_SC, str);
+    }
+
+    public void sendStaffMessagesToggle(StaffUser user, boolean state) {
+        String str = user.getName() + ";" + state;
+        sendMessage(MessageType.STAFF_TSM, str);
     }
 
     // Initial staff list update
@@ -161,6 +172,14 @@ public class MessagingService {
                             .messageId(type.toString() + ";" + serverId)
                             .build(),
                     message.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        try {
+            connection.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

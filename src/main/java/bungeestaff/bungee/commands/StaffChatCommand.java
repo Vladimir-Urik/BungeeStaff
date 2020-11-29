@@ -29,6 +29,7 @@ public class StaffChatCommand extends CommandBase {
 
             if (args.length == 0) {
                 plugin.sendMessage(player, "StaffChat-Module.StaffChat-" + (user.switchStaffChat() ? "Enabled" : "Disabled"));
+                plugin.getMessagingService().sendStaffChatUpdate(user, user.isStaffChat());
                 return;
             }
         }

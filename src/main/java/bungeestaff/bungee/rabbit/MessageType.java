@@ -59,6 +59,26 @@ public enum MessageType {
         if (user == null)
             return;
         plugin.getStaffManager().removeUser(user, false);
+    }),
+
+    STAFF_TSM((plugin, message, serverId) -> {
+        StaffUser user = plugin.getStaffManager().getUser(message.split(";")[0]);
+
+        if (user == null)
+            return;
+
+        boolean bool = Boolean.parseBoolean(message.split(";")[1]);
+        user.setStaffMessages(bool);
+    }),
+
+    STAFF_SC((plugin, message, serverId) -> {
+        StaffUser user = plugin.getStaffManager().getUser(message.split(";")[0]);
+
+        if (user == null)
+            return;
+
+        boolean bool = Boolean.parseBoolean(message.split(";")[1]);
+        user.setStaffChat(bool);
     });
 
     private final MessageDispatcher dispatcher;

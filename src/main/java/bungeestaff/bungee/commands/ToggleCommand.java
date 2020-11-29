@@ -23,5 +23,6 @@ public class ToggleCommand extends CommandBase {
             return;
 
         plugin.sendMessage(player, "Staff-Messages.Staff-Messages-" + (user.switchStaffMessages() ? "On" : "Off"));
+        plugin.getMessagingService().sendStaffMessagesToggle(user, user.isStaffChat());
     }
 }

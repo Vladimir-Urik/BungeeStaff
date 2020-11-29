@@ -95,6 +95,7 @@ public class BungeeStaffPlugin extends Plugin {
     public void onDisable() {
         instance = null;
         staffManager.save();
+        messagingService.close();
     }
 
     private void registerCommands() {
