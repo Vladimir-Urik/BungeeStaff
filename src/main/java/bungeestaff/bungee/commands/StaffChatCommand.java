@@ -28,7 +28,7 @@ public class StaffChatCommand extends CommandBase {
                 return;
 
             if (args.length == 0) {
-                plugin.sendLineMessage("StaffChat-Module.StaffChat-" + (user.switchStaffChat() ? "Enabled" : "Disabled"), player);
+                plugin.sendMessage(player, "StaffChat-Module.StaffChat-" + (user.switchStaffChat() ? "Enabled" : "Disabled"));
                 return;
             }
         }
@@ -36,7 +36,7 @@ public class StaffChatCommand extends CommandBase {
         StringBuilder message = new StringBuilder();
         Arrays.stream(args).forEach(str -> message.append(" ").append(str));
 
-        String wholeMessage = plugin.getLineMessage("StaffChat-Module.StaffChat-Message")
+        String wholeMessage = plugin.getMessage("StaffChat-Module.StaffChat-Message")
                 .replace("%server%", player == null ? "Void" : player.getServer().getInfo().getName())
                 .replace("%player%", player == null ? "Console" : player.getName())
                 .replace("%prefix%", player == null ? "&6Mighty &e" : plugin.getPrefix(player))

@@ -22,6 +22,6 @@ public class ToggleCommand extends CommandBase {
         if (user == null)
             return;
 
-        plugin.sendLineMessage("Staff-Messages.Staff-Messages-" + (user.switchStaffMessages() ? "On" : "Off"), player);
+        plugin.sendMessage(player, "Staff-Messages.Staff-Messages-" + (user.switchStaffMessages() ? "On" : "Off"));
     }
 }

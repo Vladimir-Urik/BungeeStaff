@@ -27,14 +27,14 @@ public class RequestCommand extends CommandBase {
         Arrays.stream(args).skip(1).forEach(str -> message.append(" ").append(str));
 
         if (!plugin.getCooldownManager().trigger(CooldownType.REQUEST, player.getUniqueId())) {
-            TextUtil.sendMessage(player, plugin.getLineMessage("Request-Module.Request-Cooldown-Message")
+            TextUtil.sendMessage(player, plugin.getMessage("Request-Module.Request-Cooldown-Message")
                     .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REQUEST, player.getUniqueId(), TimeUnit.SECONDS))));
             return;
         }
 
         TextUtil.sendMessage(player, "Request-Module.Request-Sent");
 
-        String format = plugin.getListMessage("Request-Module.Request-Broadcast");
+        String format = plugin.getMessage("Request-Module.Request-Broadcast");
 
         plugin.getStaffManager().sendRawMessage(format
                 .replace("%player_server%", player.getServer().getInfo().getName())

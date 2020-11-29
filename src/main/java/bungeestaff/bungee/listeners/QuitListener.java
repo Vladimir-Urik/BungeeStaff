@@ -26,7 +26,7 @@ public class QuitListener extends EventListener {
 
         plugin.getMessagingManager().removeUser(player.getName());
 
-        plugin.getStaffManager().sendRawMessage(plugin.getLineMessage("Staff-Messages.Staff-Leave")
+        plugin.getStaffManager().sendRawMessage(plugin.getMessage("Staff-Messages.Staff-Leave")
                 .replace("%server_from%", player.getServer().getInfo().getName())
                 .replace("%player%", player.getName())
                 .replace("%prefix%", plugin.getPrefix(player)), MessageType.STAFF);

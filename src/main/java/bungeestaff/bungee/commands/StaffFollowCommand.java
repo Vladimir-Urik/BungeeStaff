@@ -23,17 +23,17 @@ public class StaffFollowCommand extends CommandBase {
         ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
 
         if (target == null) {
-            plugin.sendLineMessage("Report-Module.Player-Not-Found", player);
+            plugin.sendMessage(player, "Report-Module.Player-Not-Found");
             return;
         }
 
         ServerInfo targetServer = target.getServer().getInfo();
 
         if (targetServer.getPlayers().contains(player)) {
-            TextUtil.sendMessage(player, plugin.getLineMessage("Staff-Follow.Already-In")
+            TextUtil.sendMessage(player, plugin.getMessage("Staff-Follow.Already-In")
                     .replace("%player%", target.getName()));
         } else {
-            TextUtil.sendMessage(player, plugin.getLineMessage("Staff-Follow.Joining")
+            TextUtil.sendMessage(player, plugin.getMessage("Staff-Follow.Joining")
                     .replace("%target%", target.getName())
                     .replace("%target_server%", target.getServer().getInfo().getName()));
 

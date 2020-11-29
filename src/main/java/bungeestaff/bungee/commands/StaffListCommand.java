@@ -19,10 +19,10 @@ public class StaffListCommand extends CommandBase {
     public void onCommand(CommandSender sender, String[] args) {
         Set<StaffUser> onlineStaff = plugin.getStaffManager().getUsers(StaffUser::isOnline);
 
-        StringBuilder header = new StringBuilder(plugin.getListMessage("Staff-List.Header"));
+        StringBuilder header = new StringBuilder(plugin.getMessage("Staff-List.Header"));
 
         for (StaffUser user : onlineStaff) {
-            String line = plugin.getLineMessage("Staff-List.List")
+            String line = plugin.getMessage("Staff-List.List")
                     .replace("%rank%", user.getRank().getName())
                     .replace("%player%", user.getName())
                     .replace("%prefix%", plugin.getPrefix(user.getUniqueID()))
@@ -30,7 +30,7 @@ public class StaffListCommand extends CommandBase {
             header.append("\n").append(line);
         }
 
-        header.append("\n").append(plugin.getListMessage("Staff-List.Footer"));
+        header.append("\n").append(plugin.getMessage("Staff-List.Footer"));
 
         TextUtil.sendMessage(sender, header.toString()
                 .replace("%online_staff%", String.valueOf(onlineStaff.size())));

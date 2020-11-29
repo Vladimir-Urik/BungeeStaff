@@ -49,7 +49,7 @@ public abstract class AbstractCommand extends Command {
     protected boolean checkPreconditions(CommandSender sender, String[] args) {
 
         if (!plugin.hasCustomPermission(getPermissionKey(), sender)) {
-            plugin.sendLineMessage("General.No-Permission", sender);
+            plugin.sendMessage(sender, "General.No-Permission");
             return false;
         }
 
@@ -69,12 +69,12 @@ public abstract class AbstractCommand extends Command {
             return false;
 
         if (isPlayerOnly() && !(sender instanceof ProxiedPlayer)) {
-            plugin.sendLineMessage("General.Only-Player", sender);
+            plugin.sendMessage(sender, "General.On;ly-Player");
             return false;
         }
 
         if (isConsoleOnly() && sender instanceof ProxiedPlayer) {
-            plugin.sendLineMessage("General.Only-Console", sender);
+            plugin.sendMessage(sender, "General.Only-Console");
             return false;
         }
 
@@ -89,10 +89,10 @@ public abstract class AbstractCommand extends Command {
             ProxyServer.getInstance().getLogger().info(range.toString() + " = " + res);
 
             if (res == -1) {
-                plugin.sendLineMessage("General.Not-Enough-Arguments", sender);
+                plugin.sendMessage(sender, "General.Not-Enough-Arguments");
                 return false;
             } else if (res == 1) {
-                plugin.sendLineMessage("General.Too-Many-Arguments", sender);
+                plugin.sendMessage(sender, "General.Too-Many-Arguments");
                 return false;
             }
         }

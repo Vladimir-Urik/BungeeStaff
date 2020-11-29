@@ -25,6 +25,7 @@ public class ReportCommand extends CommandBase {
         setRange(2, -1);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onCommand(CommandSender sender, String[] args) {
 
@@ -41,26 +42,26 @@ public class ReportCommand extends CommandBase {
             user = plugin.getMessagingManager().getUser(args[0]);
 
             if (user == null) {
-                plugin.sendLineMessage("Report-Module.Player-Not-Found", sender);
+                plugin.sendMessage(sender, "Report-Module.Player-Not-Found");
                 return;
             }
         } else
             user = new CachedUser(target.getName(), target.getServer().getInfo().getName());
 
         if (player.equals(target)) {
-            plugin.sendLineMessage("Report-Module.Player-Sender", sender);
+            plugin.sendMessage(sender, "Report-Module.Player-Sender");
             return;
         }
 
         if (!plugin.getCooldownManager().trigger(CooldownType.REPORT, player.getUniqueId())) {
-            plugin.sendMessage(plugin.getLineMessage("Report-Module.Report-Cooldown-Message")
-                    .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REPORT, player.getUniqueId(), TimeUnit.SECONDS))), player);
+            plugin.sendMessage(player, plugin.getMessage("Report-Module.Report-Cooldown-Message")
+                    .replace("%amount%", String.valueOf(plugin.getCooldownManager().getRemaining(CooldownType.REPORT, player.getUniqueId(), TimeUnit.SECONDS))));
             return;
         }
 
-        plugin.sendLineMessage("Report-Module.Report-Sent", sender);
+        plugin.sendMessage(sender, "Report-Module.Report-Sent");
 
-        String format = plugin.getListMessage("Report-Module.Report-Broadcast");
+        String format = plugin.getMessage("Report-Module.Report-Broadcast");
 
         TextComponent message = TextUtil.format(format
                 .replace("%reporter_server%", player.getServer().getInfo().getName())
@@ -69,12 +70,12 @@ public class ReportCommand extends CommandBase {
                 .replace("%reported_server%", user.getServer())
                 .replace("%reason%", reason));
 
-        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(plugin.getLineMessage("Report-Module.Hover-Message")
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(plugin.getMessage("Report-Module.Hover-Message")
                 .replace("%reported%", user.getName())
                 .replace("%reported_server%", user.getServer()))
                 .create()));
 
-        message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, plugin.getLineMessage("Report-Module.JSONClick-Command")
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, plugin.getMessage("Report-Module.JSONClick-Command")
                 .replace("%reported%", user.getName())));
 
         if (plugin.getMessages().getBoolean("Report-Module.Report-Clickable", false)) {

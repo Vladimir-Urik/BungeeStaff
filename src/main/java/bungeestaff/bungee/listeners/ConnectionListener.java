@@ -34,12 +34,12 @@ public class ConnectionListener extends EventListener {
         String message;
 
         if (player.getServer() == null) {
-            message = plugin.getLineMessage("Server-Switch-Module.First-Join")
+            message = plugin.getMessage("Server-Switch-Module.First-Join")
                     .replace("%player%", player.getName())
                     .replace("%server%", targetServer.getName())
                     .replace("%prefix%", prefix);
         } else {
-            message = plugin.getLineMessage("Server-Switch-Module.Switch")
+            message = plugin.getMessage("Server-Switch-Module.Switch")
                     .replace("%player%", player.getName())
                     .replace("%server_to%", targetServer.getName())
                     .replace("%server_from%", player.getServer().getInfo().getName())
