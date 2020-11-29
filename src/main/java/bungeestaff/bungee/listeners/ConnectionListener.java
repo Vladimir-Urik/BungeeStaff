@@ -29,6 +29,8 @@ public class ConnectionListener extends EventListener {
         if (targetServer.getPlayers().contains(player))
             return;
 
+        user.setServer(targetServer.getName());
+
         String prefix = plugin.getPrefix(player);
 
         String message;

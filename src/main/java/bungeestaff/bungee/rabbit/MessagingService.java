@@ -104,7 +104,7 @@ public class MessagingService {
 
     // Initial staff list update
     public void sendStaffUpdate() {
-        Set<StaffUser> local = plugin.getStaffManager().getUsers();
+        Set<StaffUser> local = plugin.getStaffManager().getUsers(u -> !u.isRemote());
         String str = ParseUtil.serializeCollection(local);
         sendMessage(MessageType.UPDATE_STAFF, str);
     }

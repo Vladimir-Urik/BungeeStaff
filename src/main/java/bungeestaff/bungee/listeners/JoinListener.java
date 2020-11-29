@@ -28,7 +28,10 @@ public class JoinListener extends EventListener {
         user.setName(player.getName());
 
         // Delay 1 second so the server is not null.
-        plugin.getProxy().getScheduler().schedule(plugin, () -> plugin.getMessagingService().getUserCache().addUser(player), 1, TimeUnit.SECONDS);
+        plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            plugin.getMessagingService().getUserCache().addUser(player);
+            user.setServer(player.getServer().getInfo().getName());
+        }, 1, TimeUnit.SECONDS);
 
         plugin.getMessagingService().sendStaffJoin(user);
 
