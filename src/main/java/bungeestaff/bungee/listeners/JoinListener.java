@@ -17,7 +17,7 @@ public class JoinListener extends EventListener {
     public void onJoin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
+        StaffUser user = plugin.getStaffManager().getUser(player);
 
         if (user == null)
             return;
@@ -26,9 +26,6 @@ public class JoinListener extends EventListener {
         user.setName(player.getName());
 
         plugin.getMessagingManager().addUser(player);
-
-        if (!plugin.hasCustomPermission("Staff-Join", player))
-            return;
 
         plugin.getStaffManager().sendRawMessage(plugin.getMessages().getString("Staff-Messages.Staff-Join")
                         .replace("%player%", player.getName())

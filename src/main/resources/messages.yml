@@ -14,6 +14,7 @@ General:
   No-Permission: '&cYou do not have permission for this command!'
   Not-Enough-Arguments: '&cNot enough arguments.'
   Too-Many-Arguments: '&cToo many arguments.'
+  You-Are-Not-Staff: '&cYou have to be a staff user to use this.'
 
 BungeeStaff-Module:
   Reload: '&8[&bBungeeStaff&8] &aModules reloaded'

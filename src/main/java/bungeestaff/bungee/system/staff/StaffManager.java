@@ -88,6 +88,13 @@ public class StaffManager {
     }
 
     @Nullable
+    public StaffUser getUser(ProxiedPlayer player) {
+        if (player == null)
+            return null;
+        return getUser(player.getUniqueId());
+    }
+
+    @Nullable
     public StaffUser getUser(UUID uniqueID) {
         return this.users.get(uniqueID);
     }

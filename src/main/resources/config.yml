@@ -5,11 +5,7 @@
 Custom-Permissions:
   Core-Command: 'bstaff.core'
   Toggle-Staff-Messages: 'bstaff.togglestaffmessages'
-  Staff-Join: 'bstaff.staff.join'
-  Staff-Leave: 'bstaff.staff.leave'
   StaffChat-Command: 'bstaff.staffchat'
-  Request-Notify: 'bstaff.request.notify'
-  Report-Notify: 'bstaff.report.notify'
   Staff-Follow: 'bstaff.follow'
   Staff-List: 'bstaff.stafflist'
   Broadcast-Command: 'bstaff.broadcast'

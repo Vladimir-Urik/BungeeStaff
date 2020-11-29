@@ -5,7 +5,6 @@ import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.rabbit.CachedUser;
 import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.cooldown.CooldownType;
-import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -38,7 +37,7 @@ public class ReportCommand extends CommandBase {
         CachedUser user;
 
         if (target == null) {
-
+            // Try to fetch cached user from Rabbit
             user = plugin.getMessagingManager().getUser(args[0]);
 
             if (user == null) {
@@ -61,51 +60,44 @@ public class ReportCommand extends CommandBase {
 
         plugin.sendLineMessage("Report-Module.Report-Sent", sender);
 
-        for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
+        String format = plugin.getListMessage("Report-Module.Report-Broadcast");
 
-            if (!plugin.hasCustomPermission("Report-Notify", loopPlayer))
-                continue;
+        TextComponent message = TextUtil.format(format
+                .replace("%reporter_server%", player.getServer().getInfo().getName())
+                .replace("%reporter%", player.getName())
+                .replace("%reported%", user.getName())
+                .replace("%reported_server%", user.getServer())
+                .replace("%reason%", reason));
 
-            StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(plugin.getLineMessage("Report-Module.Hover-Message")
+                .replace("%reported%", user.getName())
+                .replace("%reported_server%", user.getServer()))
+                .create()));
 
-            if (loopUser == null || !loopUser.isOnline() || !loopUser.isStaffMessages())
-                continue;
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, plugin.getLineMessage("Report-Module.JSONClick-Command")
+                .replace("%reported%", user.getName())));
 
-            String format = plugin.getListMessage("Report-Module.Report-Broadcast");
+        if (plugin.getMessages().getBoolean("Report-Module.Report-Clickable", false)) {
+            sendJson(message);
 
-            if (plugin.getMessages().getBoolean("Report-Module.Report-Clickable")) {
-                TextComponent message = TextUtil.format(format
-                        .replace("%reporter_server%", player.getServer().getInfo().getName())
-                        .replace("%reporter%", player.getName())
-                        .replace("%reported%", user.getName())
-                        .replace("%reported_server%", user.getServer())
-                        .replace("%reason%", reason));
-
-                message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(plugin.getLineMessage("Report-Module.Hover-Message")
-                        .replace("%reported%", user.getName())
-                        .replace("%reported_server%", user.getServer()))
-                        .create()));
-
-                message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, plugin.getLineMessage("Report-Module.JSONClick-Command")
-                        .replace("%reported%", user.getName())));
-
-                loopPlayer.sendMessage(message);
-            } else {
-                TextUtil.sendMessage(loopPlayer, format
-                        .replace("%reporter_server%", player.getServer().getInfo().getName())
-                        .replace("%reporter%", user.getName())
-                        .replace("%reported%", user.getName())
-                        .replace("%reported_server%", user.getServer())
-                        .replace("%reason%", reason));
-            }
-
-            // Send the message over Rabbit
+            // Rabbit message
             plugin.getMessagingManager().sendMessage(MessageType.STAFF, format
                     .replace("%reporter_server%", player.getServer().getInfo().getName())
                     .replace("%reporter%", player.getName())
                     .replace("%reported%", user.getName())
                     .replace("%reported_server%", user.getServer())
                     .replace("%reason%", reason));
-        }
+        } else
+            plugin.getStaffManager().sendRawMessage(format
+                    .replace("%reporter_server%", player.getServer().getInfo().getName())
+                    .replace("%reporter%", player.getName())
+                    .replace("%reported%", user.getName())
+                    .replace("%reported_server%", user.getServer())
+                    .replace("%reason%", reason), MessageType.STAFF);
+    }
+
+    private void sendJson(TextComponent component) {
+        plugin.getStaffManager().getUsers(u -> u.isOnline() && u.isStaffMessages())
+                .forEach(u -> u.asPlayer().sendMessage(component));
     }
 }

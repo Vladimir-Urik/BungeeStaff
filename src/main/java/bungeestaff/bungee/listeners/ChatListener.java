@@ -17,7 +17,7 @@ public class ChatListener extends EventListener {
     public void onChat(ChatEvent event) {
         ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 
-        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
+        StaffUser user = plugin.getStaffManager().getUser(player);
 
         if (user == null)
             return;

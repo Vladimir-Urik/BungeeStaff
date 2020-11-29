@@ -4,7 +4,6 @@ import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.cooldown.CooldownType;
-import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.util.TextUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -35,22 +34,11 @@ public class RequestCommand extends CommandBase {
 
         TextUtil.sendMessage(player, "Request-Module.Request-Sent");
 
-        for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
+        String format = plugin.getListMessage("Request-Module.Request-Broadcast");
 
-            if (!plugin.hasCustomPermission("Request-Notify"))
-                continue;
-
-            StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
-
-            if (loopUser == null || !loopUser.isStaffMessages())
-                continue;
-
-            String format = plugin.getListMessage("Request-Module.Request-Broadcast");
-
-            plugin.getStaffManager().sendRawMessage(format
-                    .replace("%player_server%", player.getServer().getInfo().getName())
-                    .replace("%player%", player.getName())
-                    .replace("%reason%", message.toString()), MessageType.STAFF);
-        }
+        plugin.getStaffManager().sendRawMessage(format
+                .replace("%player_server%", player.getServer().getInfo().getName())
+                .replace("%player%", player.getName())
+                .replace("%reason%", message.toString()), MessageType.STAFF);
     }
 }

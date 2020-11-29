@@ -17,7 +17,7 @@ public class QuitListener extends EventListener {
     public void onQuit(PlayerDisconnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
+        StaffUser user = plugin.getStaffManager().getUser(player);
 
         if (user == null)
             return;
@@ -26,12 +26,9 @@ public class QuitListener extends EventListener {
 
         plugin.getMessagingManager().removeUser(player.getName());
 
-        if (!plugin.hasCustomPermission("Staff-Leave", player))
-            return;
-
-        plugin.getStaffManager().sendRawMessage(plugin.getMessages().getString("Staff-Messages.Staff-Leave")
-                        .replace("%server_from%", player.getServer().getInfo().getName())
-                        .replace("%player%", player.getName())
-                        .replace("%prefix%", plugin.getPrefix(player)), MessageType.STAFF);
+        plugin.getStaffManager().sendRawMessage(plugin.getLineMessage("Staff-Messages.Staff-Leave")
+                .replace("%server_from%", player.getServer().getInfo().getName())
+                .replace("%player%", player.getName())
+                .replace("%prefix%", plugin.getPrefix(player)), MessageType.STAFF);
     }
 }

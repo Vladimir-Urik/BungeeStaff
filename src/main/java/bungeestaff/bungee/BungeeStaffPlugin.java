@@ -3,6 +3,7 @@ package bungeestaff.bungee;
 import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.listeners.*;
+import bungeestaff.bungee.rabbit.CachedUser;
 import bungeestaff.bungee.rabbit.MessagingManager;
 import bungeestaff.bungee.system.broadcast.BroadcastManager;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 public class BungeeStaffPlugin extends Plugin {
@@ -48,9 +50,9 @@ public class BungeeStaffPlugin extends Plugin {
         instance = this;
 
         CommandSender console = getProxy().getConsole();
-        TextUtil.sendMessage(console, "&8&n------------------------" +
-                "\n&fBungeeStaff &8- (&ev" + getDescription().getVersion() + "&8)" +
-                "\n&8&n------------------------");
+        TextUtil.sendMessage(console, "&8&m                        ");
+        TextUtil.sendMessage(console, "&eBungeeStaff &7(&f" + getDescription().getVersion() + "&7)");
+        TextUtil.sendMessage(console, "&8&m                        ");
 
         this.config = new Config(this, "config");
         config.load();
@@ -86,7 +88,7 @@ public class BungeeStaffPlugin extends Plugin {
         broadcastManager.load();
         rankManager.load();
 
-        TextUtil.sendMessage(sender, getMessages().getString("BungeeStaff-Module.Reload")
+        TextUtil.sendMessage(sender, getLineMessage("BungeeStaff-Module.Reload")
                 .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));
     }
 
@@ -172,6 +174,22 @@ public class BungeeStaffPlugin extends Plugin {
     public String getPrefix(UUID uniqueID) {
         StaffUser user = staffManager.getUser(uniqueID);
         return user == null || user.getRank() == null || user.getRank().getPrefix() == null ? getConfig().getString("No-Rank") : user.getRank().getPrefix();
+    }
+
+    /**
+     * Fetch StaffUser from StaffManager, if null, send the player an error message.
+     */
+    public StaffUser getUser(ProxiedPlayer player) {
+        StaffUser user = staffManager.getUser(player);
+        if (user == null)
+            sendLineMessage("General.You-Are-Not-Staff", player);
+        return user;
+    }
+
+    public Set<CachedUser> getUsers() {
+        Set<CachedUser> users = messagingManager.getUsers();
+        getProxy().getPlayers().forEach(p -> users.add(new CachedUser(p.getName(), p.getServer().getInfo().getName())));
+        return users;
     }
 
     public Configuration getMessages() {

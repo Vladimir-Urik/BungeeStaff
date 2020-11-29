@@ -1,7 +1,7 @@
 package bungeestaff.bungee.listeners;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.util.TextUtil;
+import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -18,42 +18,34 @@ public class ConnectionListener extends EventListener {
     public void onConnect(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
+        StaffUser user = plugin.getStaffManager().getUser(player);
 
         if (user == null)
             return;
 
-        // Switch and join messages
-        for (ProxiedPlayer loopPlayer : plugin.getProxy().getPlayers()) {
+        ServerInfo targetServer = event.getTarget();
 
-            if (!plugin.hasCustomPermission("Server-Switch", player) || !plugin.hasCustomPermission("Server-Switch-Notify", loopPlayer))
-                continue;
+        // Why a return when he's already online..? some kind of back check?
+        if (targetServer.getPlayers().contains(player))
+            return;
 
-            StaffUser loopUser = plugin.getStaffManager().getUser(loopPlayer.getUniqueId());
+        String prefix = plugin.getPrefix(player);
 
-            if (loopUser == null || !loopUser.isStaffMessages())
-                continue;
+        String message;
 
-            String prefix = plugin.getPrefix(player);
-
-            ServerInfo targetServer = event.getTarget();
-
-            // Why a return when he's already online..? some kind of back check?
-            if (targetServer.getPlayers().contains(player))
-                return;
-
-            if (player.getServer() == null) {
-                TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.First-Join")
-                        .replace("%player%", player.getName())
-                        .replace("%server%", targetServer.getName())
-                        .replace("%prefix%", prefix));
-            } else {
-                TextUtil.sendMessage(loopPlayer, plugin.getMessages().getString("Server-Switch-Module.Switch")
-                        .replace("%player%", player.getName())
-                        .replace("%server_to%", targetServer.getName())
-                        .replace("%server_from%", player.getServer().getInfo().getName())
-                        .replace("%prefix%", prefix));
-            }
+        if (player.getServer() == null) {
+            message = plugin.getLineMessage("Server-Switch-Module.First-Join")
+                    .replace("%player%", player.getName())
+                    .replace("%server%", targetServer.getName())
+                    .replace("%prefix%", prefix);
+        } else {
+            message = plugin.getLineMessage("Server-Switch-Module.Switch")
+                    .replace("%player%", player.getName())
+                    .replace("%server_to%", targetServer.getName())
+                    .replace("%server_from%", player.getServer().getInfo().getName())
+                    .replace("%prefix%", prefix);
         }
+
+        plugin.getStaffManager().sendRawMessage(message, MessageType.STAFF);
     }
 }

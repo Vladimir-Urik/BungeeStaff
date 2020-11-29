@@ -23,9 +23,8 @@ public class StaffChatCommand extends CommandBase {
 
         if (sender instanceof ProxiedPlayer) {
             player = (ProxiedPlayer) sender;
-            user = plugin.getStaffManager().getUser(player.getUniqueId());
 
-            if (user == null)
+            if ((user = plugin.getUser(player)) == null)
                 return;
 
             if (args.length == 0) {
@@ -37,7 +36,6 @@ public class StaffChatCommand extends CommandBase {
         StringBuilder message = new StringBuilder();
         Arrays.stream(args).forEach(str -> message.append(" ").append(str));
 
-        // Replace placeholders here to override them in StaffManager#sendStaffMessage
         String wholeMessage = plugin.getLineMessage("StaffChat-Module.StaffChat-Message")
                 .replace("%server%", player == null ? "Void" : player.getServer().getInfo().getName())
                 .replace("%player%", player == null ? "Console" : player.getName())

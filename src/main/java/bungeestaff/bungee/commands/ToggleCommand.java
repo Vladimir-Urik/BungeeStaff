@@ -17,7 +17,7 @@ public class ToggleCommand extends CommandBase {
     public void onCommand(CommandSender sender, String[] args) {
         ProxiedPlayer player = (ProxiedPlayer) sender;
 
-        StaffUser user = plugin.getStaffManager().getUser(player.getUniqueId());
+        StaffUser user = plugin.getUser(player);
 
         if (user == null)
             return;
