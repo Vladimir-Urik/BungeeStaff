@@ -10,9 +10,9 @@ general:
   # /broadcast general message='Hello world!' target='owner'
   # They can contain line separators '\n' to create a new line.
   format:
-    - '&8&m        &a Announcement &8&m        '
-    - '%message%'
-    - '&8&m                              '
+    - '&8&m        &a Announcement &8&m        &r'
+    - '%message%&r'
+    - '&8&m                              &r'
 
 basic:
   format:

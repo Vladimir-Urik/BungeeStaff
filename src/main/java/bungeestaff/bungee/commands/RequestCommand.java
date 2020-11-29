@@ -23,7 +23,7 @@ public class RequestCommand extends CommandBase {
     public void onCommand(CommandSender sender, String[] args) {
         ProxiedPlayer player = (ProxiedPlayer) sender;
 
-        StringBuilder message = new StringBuilder();
+        StringBuilder message = new StringBuilder(args[0]);
         Arrays.stream(args).skip(1).forEach(str -> message.append(" ").append(str));
 
         if (!plugin.getCooldownManager().trigger(CooldownType.REQUEST, player.getUniqueId())) {
@@ -32,7 +32,7 @@ public class RequestCommand extends CommandBase {
             return;
         }
 
-        TextUtil.sendMessage(player, "Request-Module.Request-Sent");
+        plugin.sendMessage(player, "Request-Module.Request-Sent");
 
         String format = plugin.getMessage("Request-Module.Request-Broadcast");
 

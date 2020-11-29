@@ -35,13 +35,12 @@ public class BroadcastCommand extends CommandBase {
 
         PlaceholderContainer placeholders = new PlaceholderContainer();
 
-        while (matcher.find()) {
-            ProxyServer.getInstance().getLogger().info(matcher.group(1) + " = " + matcher.group(2));
+        while (matcher.find())
             placeholders.add(matcher.group(1), matcher.group(2));
-        }
 
         ProxyServer.getInstance().getLogger().info(placeholders.toString());
 
         plugin.getBroadcastManager().broadcast(format, placeholders);
+        plugin.sendMessage(sender, "Broadcast-Module.Broadcast-Sent");
     }
 }

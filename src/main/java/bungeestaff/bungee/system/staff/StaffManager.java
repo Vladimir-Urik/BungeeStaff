@@ -67,7 +67,7 @@ public class StaffManager {
 
             user.setName(name);
             user.setStaffChat(section.getBoolean(key + ".staff-chat", false));
-            user.setStaffMessages(section.getBoolean(key + ".staff-messages", plugin.getConfig().getBoolean("Defaults.staff-messages", false)));
+            user.setStaffMessages(section.getBoolean(key + ".staff-messages", plugin.getConfig().getBoolean("Defaults.Staff-Messages", false)));
 
             addUser(user, false);
         }
@@ -191,7 +191,7 @@ public class StaffManager {
      */
     public void sendStaffMessage(StaffUser author, String message) {
         String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
-                .replace("%server%", author.getServer())
+                .replace("%server%", TextUtil.nullOr(author::getServer, "none"))
                 .replace("%player%", author.getName())
                 .replace("%message%", message)
                 .replace("%prefix%", plugin.getPrefix(author));

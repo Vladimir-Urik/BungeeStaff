@@ -33,8 +33,8 @@ public class StaffChatCommand extends CommandBase {
             }
         }
 
-        StringBuilder message = new StringBuilder();
-        Arrays.stream(args).forEach(str -> message.append(" ").append(str));
+        StringBuilder message = new StringBuilder(args[0]);
+        Arrays.stream(args).skip(1).forEach(str -> message.append(" ").append(str));
 
         String wholeMessage = plugin.getMessage("StaffChat-Module.StaffChat-Message")
                 .replace("%server%", player == null ? "Void" : player.getServer().getInfo().getName())

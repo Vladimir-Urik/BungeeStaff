@@ -48,7 +48,7 @@ public class BroadcastManager {
     }
 
     public void broadcast(BroadcastFormat format, PlaceholderContainer placeholders) {
-        String message = placeholders.parse(String.join("\n&r", format.getLines()));
+        String message = placeholders.parse(String.join("\n", format.getLines()));
 
         broadcastRaw(message, true);
     }

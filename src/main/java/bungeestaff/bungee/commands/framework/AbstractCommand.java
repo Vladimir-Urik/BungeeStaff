@@ -69,7 +69,7 @@ public abstract class AbstractCommand extends Command {
             return false;
 
         if (isPlayerOnly() && !(sender instanceof ProxiedPlayer)) {
-            plugin.sendMessage(sender, "General.On;ly-Player");
+            plugin.sendMessage(sender, "General.Only-Player");
             return false;
         }
 

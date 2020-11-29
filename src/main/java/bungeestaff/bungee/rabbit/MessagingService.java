@@ -71,7 +71,10 @@ public class MessagingService {
         if (updateTask != null)
             updateTask.cancel();
 
-        this.updateTask = plugin.getProxy().getScheduler().schedule(plugin, this::sendUserUpdate, 1, interval, TimeUnit.SECONDS);
+        this.updateTask = plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            sendUserUpdate();
+            sendStaffUpdate();
+        }, 1, interval, TimeUnit.SECONDS);
     }
 
     public void sendUserUpdate() {

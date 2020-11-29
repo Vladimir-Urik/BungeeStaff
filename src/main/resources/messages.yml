@@ -112,6 +112,10 @@ Staff-List:
   Footer:
     - '&8&m                             '
 
+Broadcast-Module:
+  Invalid-Format: '&cInvalid format.'
+  Broadcast-Sent: '&7Broadcast sent.'
+
 Server-Switch-Module:
   First-Join: '&8[&4&lS&8] %prefix%%player% &5joined &8(&d%server%&8)'
   Switch: '&8[&4&lS&8] %prefix%%player% &5switched to &8(&d%server_to%&8) &5from &8(&d%server_from%&8)'
