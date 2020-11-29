@@ -30,6 +30,6 @@ public class QuitListener extends EventListener {
         plugin.getStaffManager().sendRawMessage(plugin.getMessages().getString("Staff-Messages.Staff-Leave")
                         .replace("%server_from%", player.getServer().getInfo().getName())
                         .replace("%player%", player.getName())
-                        .replace("%prefix%", plugin.getPrefix(player)), MessageType.LEAVE);
+                        .replace("%prefix%", plugin.getPrefix(player)), MessageType.STAFF);
     }
 }

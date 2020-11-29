@@ -30,6 +30,6 @@ public class JoinListener extends EventListener {
 
         plugin.getStaffManager().sendRawMessage(plugin.getMessages().getString("Staff-Messages.Staff-Join")
                         .replace("%player%", player.getName())
-                        .replace("%prefix%", plugin.getPrefix(player)), MessageType.JOIN);
+                        .replace("%prefix%", plugin.getPrefix(player)), MessageType.STAFF);
     }
 }

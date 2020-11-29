@@ -53,7 +53,7 @@ public class RequestCommand extends CommandBase {
             plugin.getStaffManager().sendRawMessage(format
                                 .replace("%player_server%", player.getServer().getInfo().getName())
                                 .replace("%player%", player.getName())
-                                .replace("%reason%", message.toString()), MessageType.REQUEST);
+                                .replace("%reason%", message.toString()), MessageType.STAFF);
         }
     }
 }

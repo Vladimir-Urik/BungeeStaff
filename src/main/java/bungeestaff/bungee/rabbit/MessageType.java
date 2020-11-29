@@ -5,27 +5,11 @@ import org.jetbrains.annotations.Nullable;
 
 public enum MessageType {
 
-    STAFF_CHAT((plugin, message) -> {
+    STAFF((plugin, message) -> {
         plugin.getStaffManager().sendRawMessage(message, null);
     }),
 
-    REPORT((plugin, message) -> {
-        plugin.getStaffManager().sendRawMessage(message, null);
-    }),
-
-    REQUEST((plugin, message) -> {
-        plugin.getStaffManager().sendRawMessage(message, null);
-    }),
-
-    JOIN((plugin, message) -> {
-        plugin.getStaffManager().sendRawMessage(message, null);
-    }),
-
-    LEAVE((plugin, message) -> {
-        plugin.getStaffManager().sendRawMessage(message, null);
-    }),
-
-    BROADCAST((plugin, message) -> {
+    PUBLIC((plugin, message) -> {
         plugin.getBroadcastManager().broadcastRaw(message, false);
     });
 

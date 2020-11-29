@@ -11,14 +11,12 @@ import java.util.concurrent.TimeoutException;
 
 public class MessagingManager {
 
-    private final BungeeStaffPlugin plugin;
-
     public static final String EXCHANGE = "bungee-staff";
+
+    private final BungeeStaffPlugin plugin;
 
     private final String serverId = UUID.randomUUID().toString();
 
-    private ConnectionFactory factory;
-    private Connection connection;
     private Channel channel;
 
     public MessagingManager(BungeeStaffPlugin plugin) {
@@ -26,7 +24,7 @@ public class MessagingManager {
     }
 
     public void initialize() {
-        this.factory = new ConnectionFactory();
+        ConnectionFactory factory = new ConnectionFactory();
 
         factory.setHost(plugin.getConfig().getString("Rabbit.Host", "localhost"));
         factory.setPort(plugin.getConfig().getInt("Rabbit.Port", 5672));
@@ -34,7 +32,7 @@ public class MessagingManager {
         factory.setPassword(plugin.getConfig().getString("Rabbit.Password"));
 
         try {
-            this.connection = factory.newConnection();
+            Connection connection = factory.newConnection();
             this.channel = connection.createChannel();
 
             channel.exchangeDeclare(EXCHANGE, "fanout");

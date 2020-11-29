@@ -92,7 +92,7 @@ public class ReportCommand extends CommandBase {
             }
 
             // Send the message over Rabbit
-            plugin.getMessagingManager().sendMessage(MessageType.REPORT, format
+            plugin.getMessagingManager().sendMessage(MessageType.STAFF, format
                     .replace("%reporter_server%", player.getServer().getInfo().getName())
                     .replace("%reporter%", player.getName())
                     .replace("%reported%", target.getName())

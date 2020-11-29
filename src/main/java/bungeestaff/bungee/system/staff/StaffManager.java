@@ -158,6 +158,6 @@ public class StaffManager {
                 .replace("%message%", message)
                 .replace("%prefix%", prefix);
 
-        sendRawMessage(wholeMessage, MessageType.STAFF_CHAT);
+        sendRawMessage(wholeMessage, MessageType.STAFF);
     }
 }
