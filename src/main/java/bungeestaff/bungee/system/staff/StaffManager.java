@@ -114,7 +114,13 @@ public class StaffManager {
     }
 
     public void addUser(StaffUser user, boolean sync) {
+
+        // Don't override from remote, just add if missing
+        if (user.isRemote() && this.users.containsKey(user.getUniqueID()))
+            return;
+
         this.users.put(user.getUniqueID(), user);
+        user.setRemote(false);
 
         if (sync)
             plugin.getMessagingService().sendStaffAdd(user);
@@ -125,17 +131,6 @@ public class StaffManager {
 
         user.setName(cachedUser.getName());
         user.setOnline(true);
-
-        addUser(user, sync);
-
-        user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
-    }
-
-    public void addUser(ProxiedPlayer player, Rank rank, boolean sync) {
-        StaffUser user = new StaffUser(player.getUniqueId(), rank);
-
-        user.setName(player.getName());
-        user.setOnline(player.isConnected());
 
         addUser(user, sync);
 

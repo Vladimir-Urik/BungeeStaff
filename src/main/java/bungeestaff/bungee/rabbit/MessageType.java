@@ -37,7 +37,6 @@ public enum MessageType {
         if (user == null)
             return;
         user.setOnline(true);
-        //TODO send the message
     }),
 
     STAFF_LEAVE((plugin, message, serverId) -> {
