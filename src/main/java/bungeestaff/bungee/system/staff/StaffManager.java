@@ -130,6 +130,7 @@ public class StaffManager {
         StaffUser user = new StaffUser(cachedUser.getUniqueId(), rank);
 
         user.setName(cachedUser.getName());
+        user.setServer(cachedUser.getServer());
         user.setOnline(true);
 
         addUser(user, sync);
