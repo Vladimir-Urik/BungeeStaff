@@ -37,7 +37,7 @@ public class MessagingService {
 
     public MessagingService(BungeeStaffPlugin plugin) {
         this.plugin = plugin;
-        this.userCache = new UserCache(serverId);
+        this.userCache = new UserCache(plugin, serverId);
     }
 
     public void initialize() {

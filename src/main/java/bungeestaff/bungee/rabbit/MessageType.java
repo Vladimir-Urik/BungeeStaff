@@ -11,10 +11,14 @@ import java.util.Set;
 
 public enum MessageType {
 
+    //TODO Ditch mass updates and replace with single user leave&join
+
+    // A staff only message (staff chat, join, leave, connect)
     STAFF((plugin, message, serverId) -> {
         plugin.getStaffManager().sendMessage(message);
     }),
 
+    // Sending a public message (broadcast)
     PUBLIC((plugin, message, serverId) -> {
         plugin.getBroadcastManager().broadcastRaw(message, false);
     }),

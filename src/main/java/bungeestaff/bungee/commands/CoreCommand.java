@@ -76,8 +76,19 @@ public class CoreCommand extends CommandBase {
                     StringBuilder message = new StringBuilder("&8&m          &3 Ranks &8&m          ");
                     for (Rank rank : plugin.getRankManager().getRanks()) {
                         Set<StaffUser> users = plugin.getStaffManager().getUsers(u -> rank.equals(u.getRank()));
-                        message.append("\n&8 - &e").append(rank.getName());
-                        users.forEach(u -> message.append("\n&8  - &f").append(u.getName()));
+                        message.append("\n&8 - &e").append(rank.getName()).append("&8: ");
+                        if (!users.isEmpty()) {
+                            message.append(TextUtil.joinStream("&7, ", users.stream()
+                                    // Map StaffUser to name and color based on props
+                                    .map(u -> {
+                                        String pref = "&f";
+                                        if (u.isOnline())
+                                            pref = "&a";
+                                        if (u.isStaffMessages())
+                                            pref += "&n";
+                                        return pref + u.getName();
+                                    }), n -> n));
+                        } else message.append("&cnone");
                     }
                     TextUtil.sendMessage(sender, message.toString());
                 })

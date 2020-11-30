@@ -1,6 +1,7 @@
 package bungeestaff.bungee.system.staff;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
+import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.Serializable;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
@@ -112,5 +113,22 @@ public class StaffUser implements Serializable {
         }
 
         return user;
+    }
+
+    private void copyUseful(String server, String name) {
+        if (this.server == null && server != null)
+            this.server = server;
+        if (this.name == null && name != null)
+            this.name = name;
+    }
+
+    public void copyUseful(CachedUser user) {
+        copyUseful(user.getServer(), user.getName());
+    }
+
+    public void copyUseful(StaffUser user) {
+        copyUseful(user.getServer(), user.getName());
+        if (!online)
+            this.online = user.isOnline();
     }
 }

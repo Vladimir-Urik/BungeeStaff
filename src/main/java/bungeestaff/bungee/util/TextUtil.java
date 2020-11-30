@@ -6,7 +6,11 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @UtilityClass
 public class TextUtil {
@@ -31,5 +35,14 @@ public class TextUtil {
         } catch (Exception e) {
             return def;
         }
+    }
+
+    public <T> String joinStream(String delimiter, Stream<T> s, Function<T, String> conv) {
+        return s.map(conv)
+                .collect(Collectors.joining(delimiter));
+    }
+
+    public <T> String joinCollection(String delimiter, Collection<T> c, Function<T, String> conv) {
+        return joinStream(delimiter, c.stream(), conv);
     }
 }

@@ -114,11 +114,6 @@ public class StaffManager {
     }
 
     public void addUser(StaffUser user, boolean sync) {
-
-        // Don't override from remote, just add if missing
-        if (user.isRemote() && this.users.containsKey(user.getUniqueID()))
-            return;
-
         this.users.put(user.getUniqueID(), user);
         user.setRemote(false);
 
@@ -155,8 +150,22 @@ public class StaffManager {
                 .collect(Collectors.toSet());
     }
 
+    public void importUser(StaffUser user) {
+        // Don't override from remote, just add if missing
+        if (this.users.containsKey(user.getUniqueID())) {
+
+            // Update server if possible
+            StaffUser localUser = getUser(user.getUniqueID());
+            if (localUser != null)
+                localUser.copyUseful(user);
+            return;
+        }
+
+        addUser(user, false);
+    }
+
     public void importUsers(Set<StaffUser> users) {
-        users.forEach(u -> addUser(u, false));
+        users.forEach(this::importUser);
     }
 
     /**

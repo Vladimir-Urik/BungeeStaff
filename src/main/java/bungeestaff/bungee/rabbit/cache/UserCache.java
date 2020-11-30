@@ -1,17 +1,22 @@
 package bungeestaff.bungee.rabbit.cache;
 
+import bungeestaff.bungee.BungeeStaffPlugin;
+import bungeestaff.bungee.system.staff.StaffUser;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.*;
 
 public class UserCache {
 
-    private final String serverId;
+    private final BungeeStaffPlugin plugin;
+
+    private final String proxyId;
 
     private final Map<String, Set<CachedUser>> cachedUsers = new HashMap<>();
 
-    public UserCache(String serverId) {
-        this.serverId = serverId;
+    public UserCache(BungeeStaffPlugin plugin, String proxyId) {
+        this.plugin = plugin;
+        this.proxyId = proxyId;
     }
 
     public CachedUser getUser(String name) {
@@ -40,7 +45,7 @@ public class UserCache {
 
     // Add user from local proxy
     public void addUser(ProxiedPlayer player) {
-        getUsers(serverId).add(new CachedUser(player));
+        getUsers(proxyId).add(new CachedUser(player));
     }
 
     public void removeUser(String user) {
@@ -49,5 +54,12 @@ public class UserCache {
 
     public void updateUsers(String serverId, Collection<CachedUser> users) {
         this.cachedUsers.put(serverId, new HashSet<>(users));
+
+        // Update staff users
+        for (CachedUser user : users) {
+            StaffUser staffUser = plugin.getStaffManager().getUser(user.getUniqueId());
+            if (staffUser != null)
+                staffUser.copyUseful(user);
+        }
     }
 }
