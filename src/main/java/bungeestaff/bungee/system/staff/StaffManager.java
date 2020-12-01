@@ -127,10 +127,9 @@ public class StaffManager {
         user.setName(cachedUser.getName());
         user.setServer(cachedUser.getServer());
         user.setOnline(true);
+        user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
 
         addUser(user, sync);
-
-        user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
     }
 
     public void removeUser(StaffUser user, boolean sync) {
