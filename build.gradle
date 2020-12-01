@@ -9,7 +9,7 @@ plugins {
 archivesBaseName = 'original-BungeeStaff'
 group 'bungeestaff.bungee'
 sourceCompatibility = '8'
-version '3.0.3'
+version '3.0.4'
 
 def pluginName = 'BungeeStaff'
 def mainClass = project.property("group") + "." + pluginName + "Plugin"
