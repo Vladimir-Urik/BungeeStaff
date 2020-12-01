@@ -25,6 +25,7 @@ public class MessagingService {
 
     private final BungeeStaffPlugin plugin;
 
+    // Assign random server ID to be able to identify ourselves.
     private final String serverId = UUID.randomUUID().toString();
 
     @Getter
@@ -34,6 +35,9 @@ public class MessagingService {
     private Channel channel;
 
     private ScheduledTask updateTask;
+
+    @Getter
+    private boolean initialized = false;
 
     public MessagingService(BungeeStaffPlugin plugin) {
         this.plugin = plugin;
@@ -56,14 +60,17 @@ public class MessagingService {
         } catch (TimeoutException | IOException e) {
             ProxyServer.getInstance().getLogger().severe("Could not connect to RabbitMQ.");
             e.printStackTrace();
-        } finally {
-            ProxyServer.getInstance().getLogger().info("Initialized a connection to RabbitMQ.");
+            return;
         }
+
+        ProxyServer.getInstance().getLogger().info("Initialized RabbitMQ for synchronization.");
 
         startListening();
         startUserUpdates();
 
         sendStaffUpdate();
+
+        this.initialized = true;
     }
 
     public void startUserUpdates() {
@@ -79,6 +86,10 @@ public class MessagingService {
     }
 
     public void sendUserUpdate() {
+
+        if (!isInitialized())
+            return;
+
         String message = plugin.getProxy().getPlayers().stream()
                 .map(CachedUser::serializeFrom)
                 .collect(Collectors.joining(","));
@@ -115,6 +126,10 @@ public class MessagingService {
 
     // Initial staff list update
     public void sendStaffUpdate() {
+
+        if (!isInitialized())
+            return;
+
         Set<StaffUser> local = plugin.getStaffManager().getUsers(u -> !u.isRemote());
         String str = ParseUtil.serializeCollection(local);
         sendMessage(MessageType.UPDATE_STAFF, str);
@@ -166,6 +181,10 @@ public class MessagingService {
     }
 
     public void sendMessage(MessageType type, String message) {
+
+        if (!isInitialized())
+            return;
+
         try {
             channel.basicPublish(EXCHANGE, "",
                     new AMQP.BasicProperties.Builder()
@@ -178,6 +197,10 @@ public class MessagingService {
     }
 
     public void close() {
+
+        if (!isInitialized())
+            return;
+
         try {
             connection.close();
         } catch (IOException e) {

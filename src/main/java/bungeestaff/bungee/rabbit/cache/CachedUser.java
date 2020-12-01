@@ -21,7 +21,7 @@ public class CachedUser implements Serializable {
     public CachedUser(ProxiedPlayer player) {
         this.name = player.getName();
         this.uniqueId = player.getUniqueId();
-        this.server = ParseUtil.orNull(() -> player.getServer().getInfo().getName(), null);
+        this.server = ParseUtil.getOr(() -> player.getServer().getInfo().getName(), null);
     }
 
     public CachedUser(UUID uniqueId, String name, String server) {

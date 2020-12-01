@@ -48,7 +48,7 @@ public class ParseUtil {
                 .collect(Collectors.joining(","));
     }
 
-    public <T> T orNull(Supplier<T> supplier, T def) {
+    public <T> T getOr(Supplier<T> supplier, T def) {
         try {
             T obj = supplier.get();
             return obj == null ? def : obj;

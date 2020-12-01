@@ -26,7 +26,7 @@ public class StaffListCommand extends CommandBase {
                     .replace("%rank%", user.getRank().getName())
                     .replace("%player%", user.getName())
                     .replace("%prefix%", plugin.getPrefix(user.getUniqueID()))
-                    .replace("%server%", TextUtil.nullOr(user::getServer, "none"));
+                    .replace("%server%", TextUtil.getOr(user::getServer, "none"));
             header.append("\n").append(line);
         }
 

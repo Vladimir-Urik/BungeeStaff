@@ -103,9 +103,12 @@ public class StaffUser implements Serializable {
         }
 
         StaffUser user = new StaffUser(uniqueID, rank);
-        user.setName(name);
+        if (!name.equalsIgnoreCase("null"))
+            user.setName(name);
         user.setRemote(true);
-        user.setServer(arr[3]);
+
+        if (!arr[3].equalsIgnoreCase("null"))
+            user.setServer(arr[3]);
 
         if (arr.length > 4) {
             boolean online = Boolean.parseBoolean(arr[4]);

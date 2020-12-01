@@ -49,7 +49,5 @@ public class ConnectionListener extends EventListener {
         }
 
         plugin.getStaffManager().sendMessage(message, MessageType.STAFF);
-
-        //TODO User server & staff server update
     }
 }

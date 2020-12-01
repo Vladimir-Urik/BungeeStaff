@@ -26,9 +26,6 @@ import java.util.UUID;
 
 public class BungeeStaffPlugin extends Plugin {
 
-    @Getter
-    private static BungeeStaffPlugin instance;
-
     private Config config;
     private Config messages;
 
@@ -46,8 +43,6 @@ public class BungeeStaffPlugin extends Plugin {
 
     @Override
     public void onEnable() {
-        instance = this;
-
         CommandSender console = getProxy().getConsole();
         TextUtil.sendMessage(console, "&8&m                        ");
         TextUtil.sendMessage(console, "&eBungeeStaff &7(&f" + getDescription().getVersion() + "&7)");
@@ -70,8 +65,8 @@ public class BungeeStaffPlugin extends Plugin {
         rankManager.load();
         staffManager.load();
 
+        this.messagingService = new MessagingService(this);
         if (getConfig().getBoolean("Rabbit.Enabled", false)) {
-            this.messagingService = new MessagingService(this);
             messagingService.initialize();
         }
 
@@ -85,6 +80,9 @@ public class BungeeStaffPlugin extends Plugin {
         config.load();
         messages.load();
 
+        if (!messagingService.isInitialized() && getConfig().getBoolean("Rabbit.Enabled", false))
+            messagingService.initialize();
+
         broadcastManager.load();
         rankManager.load();
 
@@ -93,7 +91,6 @@ public class BungeeStaffPlugin extends Plugin {
     }
 
     public void onDisable() {
-        instance = null;
         staffManager.save();
         messagingService.close();
     }

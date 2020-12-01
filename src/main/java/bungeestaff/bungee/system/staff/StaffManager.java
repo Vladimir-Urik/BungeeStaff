@@ -200,7 +200,7 @@ public class StaffManager {
      */
     public void sendStaffMessage(StaffUser author, String message) {
         String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
-                .replace("%server%", TextUtil.nullOr(author::getServer, "none"))
+                .replace("%server%", TextUtil.getOr(author::getServer, "none"))
                 .replace("%player%", author.getName())
                 .replace("%message%", message)
                 .replace("%prefix%", plugin.getPrefix(author));

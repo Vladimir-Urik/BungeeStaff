@@ -28,13 +28,8 @@ public class TextUtil {
         return message == null ? "" : ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public String nullOr(Supplier<String> supplier, String def) {
-        try {
-            String str = supplier.get();
-            return Strings.isNullOrEmpty(str) ? def : str;
-        } catch (Exception e) {
-            return def;
-        }
+    public String getOr(Supplier<String> supplier, String def) {
+        return ParseUtil.getOr(supplier, def);
     }
 
     public <T> String joinStream(String delimiter, Stream<T> s, Function<T, String> conv) {
