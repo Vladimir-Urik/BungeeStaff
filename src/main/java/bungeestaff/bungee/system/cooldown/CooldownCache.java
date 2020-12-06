@@ -34,7 +34,7 @@ public class CooldownCache {
     public void start(UUID uniqueID) {
         this.cache.put(uniqueID, System.currentTimeMillis() + cooldown);
 
-        plugin.getProxy().getScheduler().schedule(plugin, () -> remove(uniqueID), cooldown, TimeUnit.MILLISECONDS);
+        plugin.getProxy().getScheduler().schedule(plugin, () -> remove(uniqueID), cooldown, TimeUnit.SECONDS);
     }
 
     public boolean has(UUID uniqueID) {

@@ -27,14 +27,14 @@ public class CooldownManager {
 
     /**
      * Return remaining cooldown for player in milliseconds.
-     * */
+     */
     public long getRemaining(CooldownType type, UUID uniqueID) {
         return this.caches.get(type).getRemaining(uniqueID);
     }
 
     /**
      * Return remaining cooldown for player in chosen time unit.
-     * */
+     */
     public long getRemaining(CooldownType type, UUID uniqueID, TimeUnit unit) {
         return unit.convert(getRemaining(type, uniqueID), TimeUnit.MILLISECONDS);
     }
