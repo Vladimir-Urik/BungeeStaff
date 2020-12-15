@@ -10,6 +10,11 @@ import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
 import bungeestaff.bungee.system.staff.StaffManager;
 import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.system.storage.IStaffStorage;
+import bungeestaff.bungee.system.storage.impl.ConnectionInfo;
+import bungeestaff.bungee.system.storage.impl.MySQLStorage;
+import bungeestaff.bungee.system.storage.impl.ServerConnection;
+import bungeestaff.bungee.system.storage.yml.YMLStorage;
 import bungeestaff.bungee.util.TextUtil;
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -21,6 +26,7 @@ import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,7 +59,9 @@ public class BungeeStaffPlugin extends Plugin {
         this.messages = new Config(this, "messages");
         messages.load();
 
-        this.staffManager = new StaffManager(this);
+        IStaffStorage storage = initializeStorage(null);
+
+        this.staffManager = new StaffManager(this, storage);
         this.rankManager = new RankManager(this);
 
         this.cooldownManager = new CooldownManager(this);
@@ -72,6 +80,32 @@ public class BungeeStaffPlugin extends Plugin {
 
         registerCommands();
         TextUtil.sendMessage(console, "&8&m                        ");
+    }
+
+    private IStaffStorage initializeStorage(String override) {
+        String type = override == null ? getConfig().getString("storage.type", "yml").toLowerCase() : override;
+
+        switch (type) {
+            case "yml":
+            case "yaml":
+            case "file":
+            case "flatfile":
+                return new YMLStorage(this);
+            case "mysql":
+            case "sql":
+                ConnectionInfo connectionInfo = ConnectionInfo.load(getConfig().getSection("storage.mysql"));
+
+                if (connectionInfo == null) {
+                    getLogger().warning("Could not initialize mysql database. Using yml flatfile instead.");
+                    return initializeStorage("yml");
+                }
+
+                ServerConnection connection = new ServerConnection(connectionInfo);
+
+                return new MySQLStorage(this, connection, getConfig().getString("storage.mysql.tables.users"));
+            default:
+                return null;
+        }
     }
 
     public void reload(CommandSender sender) {

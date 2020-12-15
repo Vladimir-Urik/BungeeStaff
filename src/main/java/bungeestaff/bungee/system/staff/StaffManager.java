@@ -1,16 +1,12 @@
 package bungeestaff.bungee.system.staff;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.rank.Rank;
-import bungeestaff.bungee.util.ParseUtil;
+import bungeestaff.bungee.system.storage.IStaffStorage;
 import bungeestaff.bungee.util.TextUtil;
-import com.google.common.base.Strings;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,74 +20,25 @@ public class StaffManager {
 
     private final Map<UUID, StaffUser> users = new HashMap<>();
 
-    private final Config storage;
+    private final IStaffStorage storage;
 
-    public StaffManager(BungeeStaffPlugin plugin) {
+    public StaffManager(BungeeStaffPlugin plugin, IStaffStorage storage) {
         this.plugin = plugin;
-        this.storage = new Config(plugin, "users");
+        this.storage = storage;
     }
 
     public void load() {
-
-        storage.load();
-        users.clear();
-
-        Configuration section = storage.getConfiguration();
-
-        for (String key : section.getKeys()) {
-            UUID uniqueID = ParseUtil.parseUUID(key);
-
-            if (uniqueID == null)
-                continue;
-
-            String name = section.getString(key + ".name");
-            String rankName = section.getString(key + ".rank");
-
-            Rank rank = plugin.getRankManager().getRank(rankName);
-
-            if (rank == null) {
-                rank = plugin.getRankManager().getRank("default");
-                ProxyServer.getInstance().getLogger().warning("Rank " + rankName + " of " + name + " does no longer exist. Using the default rank.");
-            }
-
-            ProxiedPlayer player = plugin.getProxy().getPlayer(uniqueID);
-
-            StaffUser user = new StaffUser(uniqueID, rank);
-
-            if (player != null) {
-                if (Strings.isNullOrEmpty(name))
-                    name = player.getName();
-
-                if (player.isConnected()) {
-                    user.setOnline(true);
-
-                    if (player.getServer() != null)
-                        user.setServer(player.getServer().getInfo().getName());
-                }
-            }
-
-            user.setName(name);
-            user.setStaffChat(section.getBoolean(key + ".staff-chat", false));
-            user.setStaffMessages(section.getBoolean(key + ".staff-messages", plugin.getConfig().getBoolean("Defaults.Staff-Messages", false)));
-
-            addUser(user, false);
+        if (!storage.initialize()) {
+            plugin.getLogger().warning("Could not initialize staff user storage.");
+            return;
         }
-        plugin.getLogger().info("Loaded " + this.users.size() + " staff user(s)...");
+
+        storage.loadAll();
     }
 
     public void save() {
-        storage.clear();
-        Configuration config = storage.getConfiguration();
-
-        for (StaffUser user : this.users.values()) {
-            String uuidString = user.getUniqueID().toString();
-            config.set(uuidString + ".name", user.getName());
-            config.set(uuidString + ".rank", user.getRank().getName());
-            config.set(uuidString + ".staff-chat", user.isStaffChat());
-            config.set(uuidString + ".staff-messages", user.isStaffMessages());
-        }
-
-        storage.save();
+        if (!storage.finish())
+            plugin.getLogger().warning("Could not close/save staff user storage.");
     }
 
     @Nullable
@@ -121,6 +68,7 @@ public class StaffManager {
             plugin.getMessagingService().sendStaffAdd(user);
     }
 
+    // Add user to staff
     public void addUser(CachedUser cachedUser, Rank rank, boolean sync) {
         StaffUser user = new StaffUser(cachedUser.getUniqueId(), rank);
 

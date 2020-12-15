@@ -23,6 +23,18 @@ Defaults:
 # ( this is only used if you delete the default rank against my notes ;) )
 No-Rank: '&7'
 
+storage:
+  # yml/mysql
+  type: mysql
+  mysql:
+    host: localhost
+    port: 3306
+    user: root
+    pass: secretpassword
+    database: bungeestaff
+    tables:
+      users: 'staff'
+
 # RabbitMQ configuration for multi-proxy messaging.
 # Note: Messages received over Rabbit use the origin message format.
 Rabbit:

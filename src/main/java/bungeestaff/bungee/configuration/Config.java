@@ -37,11 +37,12 @@ public class Config {
         this.configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
     }
 
-    public void load() {
+    public boolean load() {
 
         if (!file.exists()) {
 
-            file.getParentFile().mkdirs();
+            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
+                return false;
 
             try {
                 InputStream in = plugin.getResourceAsStream(name);
@@ -49,6 +50,7 @@ public class Config {
             } catch (IOException e) {
                 plugin.getProxy().getLogger().severe("Could not create file " + name);
                 e.printStackTrace();
+                return false;
             }
         }
 
@@ -57,7 +59,9 @@ public class Config {
         } catch (IOException e) {
             plugin.getProxy().getLogger().severe("Could not load " + name);
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     public void delete() {
@@ -77,11 +81,13 @@ public class Config {
         load();
     }
 
-    public void save() {
+    public boolean save() {
         try {
             configurationProvider.save(configuration, file);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }
