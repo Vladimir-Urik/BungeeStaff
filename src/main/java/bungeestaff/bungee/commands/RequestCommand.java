@@ -39,6 +39,6 @@ public class RequestCommand extends CommandBase {
         plugin.getStaffManager().sendMessage(format
                 .replace("%player_server%", player.getServer().getInfo().getName())
                 .replace("%player%", player.getName())
-                .replace("%reason%", message.toString()), MessageType.STAFF);
+                .replace("%reason%", message.toString()), MessageType.STAFF_MESSAGE);
     }
 }

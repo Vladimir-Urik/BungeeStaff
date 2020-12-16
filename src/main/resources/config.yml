@@ -24,6 +24,7 @@ Defaults:
 No-Rank: '&7'
 
 storage:
+  # Staff users won't be synced properly when yml is used.
   # yml/mysql
   type: mysql
   mysql:

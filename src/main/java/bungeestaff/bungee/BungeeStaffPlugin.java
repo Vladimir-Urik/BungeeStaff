@@ -4,7 +4,7 @@ import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.listeners.*;
 import bungeestaff.bungee.rabbit.MessagingService;
-import bungeestaff.bungee.rabbit.cache.CachedUser;
+import bungeestaff.bungee.system.UserCache;
 import bungeestaff.bungee.system.broadcast.BroadcastManager;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
@@ -19,18 +19,19 @@ import bungeestaff.bungee.util.TextUtil;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 public class BungeeStaffPlugin extends Plugin {
+
+    @Getter
+    private static BungeeStaffPlugin instance;
 
     private Config config;
     private Config messages;
@@ -47,8 +48,13 @@ public class BungeeStaffPlugin extends Plugin {
     @Getter
     private MessagingService messagingService;
 
+    @Getter
+    private UserCache userCache;
+
     @Override
     public void onEnable() {
+        instance = this;
+
         CommandSender console = getProxy().getConsole();
         TextUtil.sendMessage(console, "&8&m                        ");
         TextUtil.sendMessage(console, "&eBungeeStaff &7(&f" + getDescription().getVersion() + "&7)");
@@ -58,6 +64,8 @@ public class BungeeStaffPlugin extends Plugin {
         config.load();
         this.messages = new Config(this, "messages");
         messages.load();
+
+        this.userCache = new UserCache(this, ProxyServer.getInstance().getName());
 
         IStaffStorage storage = initializeStorage(null);
 
@@ -76,6 +84,7 @@ public class BungeeStaffPlugin extends Plugin {
         this.messagingService = new MessagingService(this);
         if (getConfig().getBoolean("Rabbit.Enabled", false)) {
             messagingService.initialize();
+            userCache.setMessaging(true);
         }
 
         registerCommands();
@@ -120,13 +129,15 @@ public class BungeeStaffPlugin extends Plugin {
         broadcastManager.load();
         rankManager.load();
 
-        TextUtil.sendMessage(sender, getMessage("BungeeStaff-Module.Reload")
+        TextUtil.sendMessage(sender, messages.getMessage("BungeeStaff-Module.Reload")
                 .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));
     }
 
     public void onDisable() {
         staffManager.save();
         messagingService.close();
+
+        instance = null;
     }
 
     private void registerCommands() {
@@ -172,21 +183,8 @@ public class BungeeStaffPlugin extends Plugin {
     }
 
     public void sendMessage(CommandSender sender, String key) {
-        String message = getMessage(key);
+        String message = messages.getMessage(key);
         TextUtil.sendMessage(sender, message);
-    }
-
-    /**
-     * Get line or list message.
-     */
-    public String getMessage(String key) {
-        Object obj = getMessages().get(key);
-        String message = null;
-        if (obj instanceof String)
-            message = (String) obj;
-        else if (obj instanceof List<?>)
-            message = String.join("\n&r", getMessages().getStringList(key));
-        return TextUtil.color(message);
     }
 
     @NotNull
@@ -215,10 +213,8 @@ public class BungeeStaffPlugin extends Plugin {
         return user;
     }
 
-    public Set<CachedUser> getUsers() {
-        Set<CachedUser> users = messagingService.getUserCache().getUsers();
-        getProxy().getPlayers().forEach(p -> users.add(new CachedUser(p)));
-        return users;
+    public String getMessage(String key) {
+        return messages.getMessage(key);
     }
 
     public Configuration getMessages() {

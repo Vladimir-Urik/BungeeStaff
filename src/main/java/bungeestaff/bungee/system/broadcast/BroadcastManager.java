@@ -44,7 +44,7 @@ public class BroadcastManager {
         plugin.getProxy().getPlayers().forEach(player -> TextUtil.sendMessage(player, message));
 
         if (send)
-            plugin.getMessagingService().sendMessage(MessageType.PUBLIC, message);
+            plugin.getMessagingService().sendMessage(MessageType.PUBLIC_MESSAGE, message);
     }
 
     public void broadcast(BroadcastFormat format, PlaceholderContainer placeholders) {

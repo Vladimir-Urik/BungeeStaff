@@ -1,6 +1,7 @@
 package bungeestaff.bungee.configuration;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
+import bungeestaff.bungee.util.TextUtil;
 import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
 
 public class Config {
 
@@ -89,5 +91,18 @@ public class Config {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Get line or list message.
+     */
+    public String getMessage(String key) {
+        Object obj = getConfiguration().get(key);
+        String message = null;
+        if (obj instanceof String)
+            message = (String) obj;
+        else if (obj instanceof List<?>)
+            message = String.join("\n&r", getConfiguration().getStringList(key));
+        return TextUtil.color(message);
     }
 }

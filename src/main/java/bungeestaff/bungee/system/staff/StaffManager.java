@@ -33,7 +33,11 @@ public class StaffManager {
             return;
         }
 
-        storage.loadAll();
+        storage.loadAll().thenAcceptAsync(set -> {
+            for (StaffUser user : set) {
+                users.put(user.getUniqueID(), user);
+            }
+        });
     }
 
     public void save() {
@@ -43,9 +47,7 @@ public class StaffManager {
 
     @Nullable
     public StaffUser getUser(ProxiedPlayer player) {
-        if (player == null)
-            return null;
-        return getUser(player.getUniqueId());
+        return player == null ? null : getUser(player.getUniqueId());
     }
 
     @Nullable
@@ -55,64 +57,45 @@ public class StaffManager {
 
     @Nullable
     public StaffUser getUser(String name) {
-        return this.users.values().stream()
+        return users.values().stream()
                 .filter(u -> u.getName().equals(name))
                 .findAny().orElse(null);
     }
 
-    public void addUser(StaffUser user, boolean sync) {
-        this.users.put(user.getUniqueID(), user);
-        user.setRemote(false);
+    public void createStaffUser(StaffUser user, boolean sync) {
+        users.put(user.getUniqueID(), user);
+        storage.save(user);
 
         if (sync)
             plugin.getMessagingService().sendStaffAdd(user);
     }
 
     // Add user to staff
-    public void addUser(CachedUser cachedUser, Rank rank, boolean sync) {
-        StaffUser user = new StaffUser(cachedUser.getUniqueId(), rank);
+    public void createStaffUser(CachedUser cachedUser, Rank rank, boolean sync) {
+        StaffUser user = new StaffUser(cachedUser.getUniqueID(), rank);
 
         user.setName(cachedUser.getName());
-        user.setServer(cachedUser.getServer());
-        user.setOnline(true);
         user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
 
-        addUser(user, sync);
+        createStaffUser(user, sync);
     }
 
     public void removeUser(StaffUser user, boolean sync) {
-        this.users.remove(user.getUniqueID());
+        users.remove(user.getUniqueID());
+        storage.delete(user.getUniqueID());
 
         if (sync)
             plugin.getMessagingService().sendStaffRemove(user.getName());
     }
 
     public Set<StaffUser> getUsers() {
-        return new HashSet<>(this.users.values());
+        return new HashSet<>(users.values());
     }
 
     public Set<StaffUser> getUsers(Predicate<StaffUser> condition) {
-        return this.users.values().stream()
+        return users.values().stream()
                 .filter(condition)
                 .collect(Collectors.toSet());
-    }
-
-    public void importUser(StaffUser user) {
-        // Don't override from remote, just add if missing
-        if (this.users.containsKey(user.getUniqueID())) {
-
-            // Update server if possible
-            StaffUser localUser = getUser(user.getUniqueID());
-            if (localUser != null)
-                localUser.copyUseful(user);
-            return;
-        }
-
-        addUser(user, false);
-    }
-
-    public void importUsers(Set<StaffUser> users) {
-        users.forEach(this::importUser);
     }
 
     /**
@@ -123,10 +106,10 @@ public class StaffManager {
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
 
-        if (type == MessageType.STAFF)
+        if (type == MessageType.STAFF_MESSAGE)
             // To staff online
             getUsers().forEach(u -> u.sendStaffMessage(message));
-        else if (type == MessageType.PUBLIC)
+        else if (type == MessageType.PUBLIC_MESSAGE)
             // To all players online
             plugin.getProxy().getPlayers().forEach(p -> TextUtil.sendMessage(p, message));
 
@@ -134,9 +117,9 @@ public class StaffManager {
     }
 
     /**
-     * Send message to online staff.
+     * Send message to online staff on local proxy.
      */
-    public void sendMessage(String message) {
+    public void sendStaffMessageRaw(String message) {
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
 
@@ -144,7 +127,7 @@ public class StaffManager {
     }
 
     /**
-     * Format and send a message to staff chat.
+     * Format and send a message to staff chat on all proxies.
      */
     public void sendStaffMessage(StaffUser author, String message) {
         String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
@@ -153,6 +136,6 @@ public class StaffManager {
                 .replace("%message%", message)
                 .replace("%prefix%", plugin.getPrefix(author));
 
-        sendMessage(wholeMessage, MessageType.STAFF);
+        sendMessage(wholeMessage, MessageType.STAFF_MESSAGE);
     }
 }

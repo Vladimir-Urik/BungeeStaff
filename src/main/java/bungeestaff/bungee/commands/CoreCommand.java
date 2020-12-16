@@ -28,18 +28,12 @@ public class CoreCommand extends CommandBase {
 
         withSubCommand("add")
                 .withExecutor((sender, args) -> {
-
-                    CachedUser user;
-                    ProxiedPlayer target = plugin.getProxy().getPlayer(args[0]);
+                    CachedUser target = plugin.getUserCache().getUser(args[0]);
 
                     if (target == null) {
-                        user = plugin.getMessagingService().getUserCache().getUser(args[0]);
-
-                        if (user == null) {
-                            plugin.sendMessage(sender, "General.Player-Offline");
-                            return;
-                        }
-                    } else user = new CachedUser(target);
+                        plugin.sendMessage(sender, "General.Player-Offline");
+                        return;
+                    }
 
                     Rank rank = plugin.getRankManager().getRank("default");
                     if (args.length > 1) {
@@ -51,7 +45,7 @@ public class CoreCommand extends CommandBase {
                         }
                     }
 
-                    plugin.getStaffManager().addUser(user, rank, true);
+                    plugin.getStaffManager().createStaffUser(target, rank, true);
                     plugin.sendMessage(sender, "BungeeStaff-Module.User-Added");
                 })
                 .withRange(1, 2);

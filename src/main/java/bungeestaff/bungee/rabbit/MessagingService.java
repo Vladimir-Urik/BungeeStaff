@@ -2,10 +2,8 @@ package bungeestaff.bungee.rabbit;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
 import bungeestaff.bungee.rabbit.cache.CachedUser;
-import bungeestaff.bungee.rabbit.cache.UserCache;
 import bungeestaff.bungee.system.Pair;
 import bungeestaff.bungee.system.staff.StaffUser;
-import bungeestaff.bungee.util.ParseUtil;
 import com.rabbitmq.client.*;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
@@ -13,7 +11,6 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,9 +25,6 @@ public class MessagingService {
     // Assign random server ID to be able to identify ourselves.
     private final String serverId = UUID.randomUUID().toString();
 
-    @Getter
-    private final UserCache userCache;
-
     private Connection connection;
     private Channel channel;
 
@@ -41,7 +35,6 @@ public class MessagingService {
 
     public MessagingService(BungeeStaffPlugin plugin) {
         this.plugin = plugin;
-        this.userCache = new UserCache(plugin, serverId);
     }
 
     public void initialize() {
@@ -68,8 +61,6 @@ public class MessagingService {
         startListening();
         startUserUpdates();
 
-        sendStaffUpdate();
-
         this.initialized = true;
     }
 
@@ -79,10 +70,8 @@ public class MessagingService {
         if (updateTask != null)
             updateTask.cancel();
 
-        this.updateTask = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-            sendUserUpdate();
-            sendStaffUpdate();
-        }, 1, interval, TimeUnit.SECONDS);
+        this.updateTask = plugin.getProxy().getScheduler()
+                .schedule(plugin, this::sendUserUpdate, 1, interval, TimeUnit.SECONDS);
     }
 
     public void sendUserUpdate() {
@@ -104,17 +93,7 @@ public class MessagingService {
         sendMessage(MessageType.STAFF_REMOVE, name);
     }
 
-    public void sendStaffJoin(StaffUser user) {
-        String str = user.getName();
-        sendMessage(MessageType.STAFF_JOIN, str);
-    }
-
-    public void sendStaffQuit(StaffUser user) {
-        String str = user.getName();
-        sendMessage(MessageType.STAFF_LEAVE, str);
-    }
-
-    public void sendStaffChatUpdate(StaffUser user, boolean state) {
+    public void sendStaffChatToggle(StaffUser user, boolean state) {
         String str = user.getName() + ";" + state;
         sendMessage(MessageType.STAFF_SC, str);
     }
@@ -124,17 +103,7 @@ public class MessagingService {
         sendMessage(MessageType.STAFF_TSM, str);
     }
 
-    // Initial staff list update
-    public void sendStaffUpdate() {
-
-        if (!isInitialized())
-            return;
-
-        Set<StaffUser> local = plugin.getStaffManager().getUsers(u -> !u.isRemote());
-        String str = ParseUtil.serializeCollection(local);
-        sendMessage(MessageType.UPDATE_STAFF, str);
-    }
-
+    // MessageID: messageType;serverId
     private Pair<MessageType, String> processId(Delivery message) {
         String messageId = message.getProperties().getMessageId();
 

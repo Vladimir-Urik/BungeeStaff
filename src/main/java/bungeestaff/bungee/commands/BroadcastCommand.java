@@ -5,7 +5,6 @@ import bungeestaff.bungee.commands.framework.CommandBase;
 import bungeestaff.bungee.system.broadcast.BroadcastFormat;
 import bungeestaff.bungee.system.broadcast.PlaceholderContainer;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -38,7 +37,7 @@ public class BroadcastCommand extends CommandBase {
         while (matcher.find())
             placeholders.add(matcher.group(1), matcher.group(2));
 
-        ProxyServer.getInstance().getLogger().info(placeholders.toString());
+        plugin.getLogger().info(placeholders.toString());
 
         plugin.getBroadcastManager().broadcast(format, placeholders);
         plugin.sendMessage(sender, "Broadcast-Module.Broadcast-Sent");
