@@ -76,17 +76,8 @@ public class YMLStorage implements IStaffStorage {
 
             StaffUser user = new StaffUser(uniqueID, rank);
 
-            if (player != null) {
-                if (Strings.isNullOrEmpty(name))
-                    name = player.getName();
-
-                if (player.isConnected()) {
-                    user.setOnline(true);
-
-                    if (player.getServer() != null)
-                        user.setServer(player.getServer().getInfo().getName());
-                }
-            }
+            if (player != null && Strings.isNullOrEmpty(name))
+                name = player.getName();
 
             user.setName(name);
             user.setStaffChat(section.getBoolean(key + ".staff-chat", false));

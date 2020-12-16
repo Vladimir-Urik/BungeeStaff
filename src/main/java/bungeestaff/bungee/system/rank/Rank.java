@@ -3,7 +3,7 @@ package bungeestaff.bungee.system.rank;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.Objects;
 
 public class Rank {
 
@@ -14,26 +14,8 @@ public class Rank {
     @Setter
     private String prefix;
 
-    private final Set<UUID> users = new HashSet<>();
-
     public Rank(String name) {
         this.name = name;
-    }
-
-    public void add(UUID uniqueID) {
-        this.users.add(uniqueID);
-    }
-
-    public void remove(UUID uniqueID) {
-        this.users.remove(uniqueID);
-    }
-
-    public Set<UUID> getUsers() {
-        return Collections.unmodifiableSet(this.users);
-    }
-
-    public boolean hasRank(UUID uniqueID) {
-        return this.users.contains(uniqueID);
     }
 
     @Override
