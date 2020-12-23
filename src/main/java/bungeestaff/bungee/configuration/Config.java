@@ -46,9 +46,16 @@ public class Config {
             if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
                 return false;
 
+            InputStream in = plugin.getResourceAsStream(name);
+
             try {
-                InputStream in = plugin.getResourceAsStream(name);
-                Files.copy(in, file.toPath());
+                if (in == null) {
+                    if (!file.createNewFile()) {
+                        plugin.getProxy().getLogger().severe("Could not create file " + name);
+                        return false;
+                    }
+                } else
+                    Files.copy(in, file.toPath());
             } catch (IOException e) {
                 plugin.getProxy().getLogger().severe("Could not create file " + name);
                 e.printStackTrace();

@@ -143,10 +143,12 @@ public class MySQLStorage implements IStaffStorage {
     public boolean initialize() {
         try {
             connection.connect();
-            return true;
         } catch (IllegalStateException e) {
             e.printStackTrace();
             return false;
         }
+
+        connection.execute(Query.CREATE_STAFF_TABLE.get(table));
+        return true;
     }
 }
