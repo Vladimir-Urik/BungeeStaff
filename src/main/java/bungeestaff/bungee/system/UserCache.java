@@ -6,6 +6,7 @@ import bungeestaff.bungee.system.staff.StaffUser;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -50,7 +51,8 @@ public class UserCache {
         ProxiedPlayer player = plugin.getProxy().getPlayer(name);
         if (player == null)
             return null;
-        return player.getServer().getInfo().getName();
+        Server server = player.getServer();
+        return server == null ? null : server.getInfo().getName();
     }
 
     @Nullable
