@@ -126,7 +126,7 @@ public class MessagingService {
                     return;
 
                 if (result.getKey() == null) {
-                    plugin.getLogger().warning("Received an unknown message type from " + message);
+                    plugin.getLogger().warning("Received an unknown message type from " + message.getProperties().getMessageId());
                     return;
                 }
 
