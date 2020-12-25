@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class MigrateCommand extends CommandBase {
 
     public MigrateCommand(BungeeStaffPlugin plugin) {
-        super(plugin, "migrate", "Migrate-Database");
+        super(plugin, "bstaffmigrate", "Migrate-Database");
         setRange(1);
     }
 
