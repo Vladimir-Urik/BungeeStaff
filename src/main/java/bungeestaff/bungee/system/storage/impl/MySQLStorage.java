@@ -9,9 +9,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class MySQLStorage implements IStaffStorage {
@@ -27,6 +25,21 @@ public class MySQLStorage implements IStaffStorage {
         this.plugin = plugin;
         this.connection = connection;
         this.table = table;
+    }
+
+    @Override
+    public CompletableFuture<Void> saveAll(Collection<StaffUser> users) {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (StaffUser user : users) {
+            futures.add(save(user).thenAcceptAsync(res -> {
+                if (!res)
+                    plugin.getLogger().severe("Could not save user " + user.getName());
+            }));
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).exceptionally(e -> {
+            e.printStackTrace();
+            return null;
+        });
     }
 
     @Override

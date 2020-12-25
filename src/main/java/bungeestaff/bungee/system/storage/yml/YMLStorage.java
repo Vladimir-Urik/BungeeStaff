@@ -46,9 +46,16 @@ public class YMLStorage implements IStaffStorage {
             config.set(uuidString + ".staff-messages", user.isStaffMessages());
         }
 
-        storage.save();
-
         return storage.save();
+    }
+
+    @Override
+    public CompletableFuture<Void> saveAll(Collection<StaffUser> users) {
+        return CompletableFuture.supplyAsync(() -> {
+            users.forEach(u -> loadedUsers.put(u.getUniqueID(), u));
+            finish();
+            return null;
+        });
     }
 
     @Override

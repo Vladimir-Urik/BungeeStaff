@@ -14,6 +14,7 @@ public class UserCache {
 
     private final BungeeStaffPlugin plugin;
 
+    @Getter
     private final String proxyId;
 
     private final Map<String, Set<CachedUser>> cachedUsers = new HashMap<>();
@@ -28,7 +29,7 @@ public class UserCache {
     }
 
     public boolean hasUserCached(String name) {
-        return messaging && getUsers(proxyId).stream().anyMatch(u -> u.getName().equals(name));
+        return messaging && getCachedUsers().stream().anyMatch(u -> u.getName().equals(name));
     }
 
     public boolean isOnlineLocal(String name) {
@@ -71,22 +72,21 @@ public class UserCache {
     }
 
     public Optional<CachedUser> getCachedUser(String name) {
-        return getUsers().stream()
+        return getCachedUsers().stream()
                 .filter(u -> u.getName().equals(name))
                 .findAny();
     }
 
-    // Get all cached users
-    public Set<CachedUser> getUsers() {
-        Set<CachedUser> total = new HashSet<>();
-        this.cachedUsers.keySet().forEach(c -> total.addAll(getUsers(c)));
-        return total;
-    }
-
     // Get online users on all proxies
     public Set<CachedUser> getOnlineUsers() {
-        Set<CachedUser> users = getUsers();
+        Set<CachedUser> users = getCachedUsers();
         plugin.getProxy().getPlayers().forEach(p -> users.add(new CachedUser(p)));
+        return users;
+    }
+
+    public Set<CachedUser> getCachedUsers() {
+        Set<CachedUser> users = new HashSet<>();
+        cachedUsers.values().forEach(users::addAll);
         return users;
     }
 

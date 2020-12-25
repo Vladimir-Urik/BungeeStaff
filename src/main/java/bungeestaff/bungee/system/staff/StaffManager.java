@@ -69,12 +69,12 @@ public class StaffManager {
             for (StaffUser user : set) {
                 users.put(user.getUniqueID(), user);
             }
+            plugin.getLogger().info(String.format("Loaded %d user(s)...", users.size()));
         });
     }
 
     public void save() {
-        if (!storage.finish())
-            plugin.getLogger().warning("Could not close/save staff user storage.");
+        storage.saveAll(this.users.values()).thenRunAsync(() -> plugin.getLogger().info(String.format("Saved %d users.", users.size())));
     }
 
     @Nullable
