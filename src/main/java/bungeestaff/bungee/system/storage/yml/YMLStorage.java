@@ -7,6 +7,7 @@ import bungeestaff.bungee.system.staff.StaffUser;
 import bungeestaff.bungee.system.storage.IStaffStorage;
 import bungeestaff.bungee.util.ParseUtil;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -18,13 +19,18 @@ public class YMLStorage implements IStaffStorage {
 
     private final BungeeStaffPlugin plugin;
 
+    @Getter
     private Config storage;
+
+    @Getter
+    private final String fileName;
 
     // L1 cache to mimic save&load, it would eat a lot of resources to save each time instead.
     private final Map<UUID, StaffUser> loadedUsers = new HashMap<>();
 
-    public YMLStorage(BungeeStaffPlugin plugin) {
+    public YMLStorage(BungeeStaffPlugin plugin, String fileName) {
         this.plugin = plugin;
+        this.fileName = fileName;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class YMLStorage implements IStaffStorage {
 
     @Override
     public boolean initialize() {
-        this.storage = new Config(plugin, "users");
+        this.storage = new Config(plugin, fileName);
 
         if (!storage.load())
             return false;

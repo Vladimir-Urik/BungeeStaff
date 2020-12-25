@@ -100,7 +100,7 @@ public class BungeeStaffPlugin extends Plugin {
             case "yaml":
             case "file":
             case "flatfile":
-                return new YMLStorage(this);
+                return new YMLStorage(this, getConfig().getString("storage.yml.file", "users"));
             case "mysql":
             case "sql":
                 ConnectionInfo connectionInfo = ConnectionInfo.load(getConfig().getSection("storage.mysql"));
@@ -154,7 +154,8 @@ public class BungeeStaffPlugin extends Plugin {
                 new ToggleCommand(this),
                 new StaffFollowCommand(this),
                 new StaffListCommand(this),
-                new BroadcastCommand(this));
+                new BroadcastCommand(this),
+                new MigrateCommand(this));
 
         if (getConfig().getBoolean("Use-Tab-Completion")) {
             new TabCompleteListener(this).register();
