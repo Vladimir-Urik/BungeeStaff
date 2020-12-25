@@ -4,27 +4,34 @@ import bungeestaff.bungee.commands.*;
 import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.listeners.*;
 import bungeestaff.bungee.rabbit.MessagingService;
-import bungeestaff.bungee.rabbit.cache.CachedUser;
+import bungeestaff.bungee.system.UserCache;
 import bungeestaff.bungee.system.broadcast.BroadcastManager;
 import bungeestaff.bungee.system.cooldown.CooldownManager;
 import bungeestaff.bungee.system.rank.RankManager;
 import bungeestaff.bungee.system.staff.StaffManager;
 import bungeestaff.bungee.system.staff.StaffUser;
+import bungeestaff.bungee.system.storage.IStaffStorage;
+import bungeestaff.bungee.system.storage.impl.ConnectionInfo;
+import bungeestaff.bungee.system.storage.impl.MySQLStorage;
+import bungeestaff.bungee.system.storage.impl.ServerConnection;
+import bungeestaff.bungee.system.storage.yml.YMLStorage;
 import bungeestaff.bungee.util.TextUtil;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class BungeeStaffPlugin extends Plugin {
+
+    @Getter
+    private static BungeeStaffPlugin instance;
 
     private Config config;
     private Config messages;
@@ -41,8 +48,13 @@ public class BungeeStaffPlugin extends Plugin {
     @Getter
     private MessagingService messagingService;
 
+    @Getter
+    private UserCache userCache;
+
     @Override
     public void onEnable() {
+        instance = this;
+
         CommandSender console = getProxy().getConsole();
         TextUtil.sendMessage(console, "&8&m                        ");
         TextUtil.sendMessage(console, "&eBungeeStaff &7(&f" + getDescription().getVersion() + "&7)");
@@ -53,7 +65,11 @@ public class BungeeStaffPlugin extends Plugin {
         this.messages = new Config(this, "messages");
         messages.load();
 
-        this.staffManager = new StaffManager(this);
+        this.userCache = new UserCache(this, ProxyServer.getInstance().getName());
+
+        IStaffStorage storage = initializeStorage(null);
+
+        this.staffManager = new StaffManager(this, storage);
         this.rankManager = new RankManager(this);
 
         this.cooldownManager = new CooldownManager(this);
@@ -68,10 +84,38 @@ public class BungeeStaffPlugin extends Plugin {
         this.messagingService = new MessagingService(this);
         if (getConfig().getBoolean("Rabbit.Enabled", false)) {
             messagingService.initialize();
+            userCache.setMessaging(true);
         }
 
         registerCommands();
+        staffManager.startAutoSave();
         TextUtil.sendMessage(console, "&8&m                        ");
+    }
+
+    private IStaffStorage initializeStorage(String override) {
+        String type = override == null ? getConfig().getString("storage.type", "yml").toLowerCase() : override;
+
+        switch (type) {
+            case "yml":
+            case "yaml":
+            case "file":
+            case "flatfile":
+                return new YMLStorage(this, getConfig().getString("storage.yml.file", "users"));
+            case "mysql":
+            case "sql":
+                ConnectionInfo connectionInfo = ConnectionInfo.load(getConfig().getSection("storage.mysql"));
+
+                if (connectionInfo == null) {
+                    getLogger().warning("Could not initialize mysql database. Using yml flatfile instead.");
+                    return initializeStorage("yml");
+                }
+
+                ServerConnection connection = new ServerConnection(connectionInfo);
+
+                return new MySQLStorage(this, connection, getConfig().getString("storage.mysql.tables.users"));
+            default:
+                return null;
+        }
     }
 
     public void reload(CommandSender sender) {
@@ -86,13 +130,19 @@ public class BungeeStaffPlugin extends Plugin {
         broadcastManager.load();
         rankManager.load();
 
-        TextUtil.sendMessage(sender, getMessage("BungeeStaff-Module.Reload")
+        staffManager.reloadAutoSave();
+
+        TextUtil.sendMessage(sender, messages.getMessage("BungeeStaff-Module.Reload")
                 .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));
     }
 
     public void onDisable() {
+        staffManager.stopAutoSave();
+
         staffManager.save();
         messagingService.close();
+
+        instance = null;
     }
 
     private void registerCommands() {
@@ -104,7 +154,8 @@ public class BungeeStaffPlugin extends Plugin {
                 new ToggleCommand(this),
                 new StaffFollowCommand(this),
                 new StaffListCommand(this),
-                new BroadcastCommand(this));
+                new BroadcastCommand(this),
+                new MigrateCommand(this));
 
         if (getConfig().getBoolean("Use-Tab-Completion")) {
             new TabCompleteListener(this).register();
@@ -138,21 +189,8 @@ public class BungeeStaffPlugin extends Plugin {
     }
 
     public void sendMessage(CommandSender sender, String key) {
-        String message = getMessage(key);
+        String message = messages.getMessage(key);
         TextUtil.sendMessage(sender, message);
-    }
-
-    /**
-     * Get line or list message.
-     */
-    public String getMessage(String key) {
-        Object obj = getMessages().get(key);
-        String message = null;
-        if (obj instanceof String)
-            message = (String) obj;
-        else if (obj instanceof List<?>)
-            message = String.join("\n&r", getMessages().getStringList(key));
-        return TextUtil.color(message);
     }
 
     @NotNull
@@ -181,10 +219,8 @@ public class BungeeStaffPlugin extends Plugin {
         return user;
     }
 
-    public Set<CachedUser> getUsers() {
-        Set<CachedUser> users = messagingService.getUserCache().getUsers();
-        getProxy().getPlayers().forEach(p -> users.add(new CachedUser(p)));
-        return users;
+    public String getMessage(String key) {
+        return messages.getMessage(key);
     }
 
     public Configuration getMessages() {

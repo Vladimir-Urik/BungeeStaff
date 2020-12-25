@@ -22,14 +22,10 @@ public class QuitListener extends EventListener {
         if (user == null)
             return;
 
-        user.setOnline(false);
-
-        plugin.getMessagingService().getUserCache().removeUser(player.getName());
-        plugin.getMessagingService().sendStaffQuit(user);
-
         plugin.getStaffManager().sendMessage(plugin.getMessage("Staff-Messages.Staff-Leave")
-                .replace("%server_from%", player.getServer().getInfo().getName())
-                .replace("%player%", player.getName())
-                .replace("%prefix%", plugin.getPrefix(player)), MessageType.STAFF);
+                        .replace("%server_from%", player.getServer().getInfo().getName())
+                        .replace("%player%", player.getName())
+                        .replace("%prefix%", plugin.getPrefix(player)),
+                MessageType.STAFF_MESSAGE);
     }
 }

@@ -12,7 +12,7 @@ import java.util.UUID;
 public class CachedUser implements Serializable {
 
     @Getter
-    private final UUID uniqueId;
+    private final UUID uniqueID;
     @Getter
     private final String name;
     @Getter
@@ -20,12 +20,12 @@ public class CachedUser implements Serializable {
 
     public CachedUser(ProxiedPlayer player) {
         this.name = player.getName();
-        this.uniqueId = player.getUniqueId();
+        this.uniqueID = player.getUniqueId();
         this.server = ParseUtil.getOr(() -> player.getServer().getInfo().getName(), null);
     }
 
-    public CachedUser(UUID uniqueId, String name, String server) {
-        this.uniqueId = uniqueId;
+    public CachedUser(UUID uniqueID, String name, String server) {
+        this.uniqueID = uniqueID;
         this.name = name;
         this.server = server;
     }
@@ -38,7 +38,7 @@ public class CachedUser implements Serializable {
     @Override
     @NotNull
     public String serialize() {
-        return uniqueId + ";" +
+        return uniqueID + ";" +
                 name + ";" +
                 server;
     }

@@ -1,20 +1,20 @@
 package bungeestaff.bungee.system.staff;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.configuration.Config;
 import bungeestaff.bungee.rabbit.MessageType;
 import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.rank.Rank;
-import bungeestaff.bungee.util.ParseUtil;
+import bungeestaff.bungee.system.storage.IStaffStorage;
 import bungeestaff.bungee.util.TextUtil;
-import com.google.common.base.Strings;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -24,81 +24,62 @@ public class StaffManager {
 
     private final Map<UUID, StaffUser> users = new HashMap<>();
 
-    private final Config storage;
+    @Getter
+    private final IStaffStorage storage;
 
-    public StaffManager(BungeeStaffPlugin plugin) {
+    private ScheduledTask autoSave;
+
+    public StaffManager(BungeeStaffPlugin plugin, IStaffStorage storage) {
         this.plugin = plugin;
-        this.storage = new Config(plugin, "users");
+        this.storage = storage;
+    }
+
+    public void stopAutoSave() {
+        if (autoSave == null)
+            return;
+
+        autoSave.cancel();
+        this.autoSave = null;
+    }
+
+    public void startAutoSave() {
+        if (autoSave != null)
+            stopAutoSave();
+
+        int interval = plugin.getConfig().getInt("auto-save.interval", 60);
+
+        this.autoSave = ProxyServer.getInstance().getScheduler().schedule(plugin, this::save, interval, interval, TimeUnit.SECONDS);
+        plugin.getLogger().info(String.format("Started auto save with an interval of %d seconds.", interval));
+    }
+
+    public void reloadAutoSave() {
+        stopAutoSave();
+
+        if (plugin.getConfig().getBoolean("auto-save.enabled", false))
+            startAutoSave();
     }
 
     public void load() {
-
-        storage.load();
-        users.clear();
-
-        Configuration section = storage.getConfiguration();
-
-        for (String key : section.getKeys()) {
-            UUID uniqueID = ParseUtil.parseUUID(key);
-
-            if (uniqueID == null)
-                continue;
-
-            String name = section.getString(key + ".name");
-            String rankName = section.getString(key + ".rank");
-
-            Rank rank = plugin.getRankManager().getRank(rankName);
-
-            if (rank == null) {
-                rank = plugin.getRankManager().getRank("default");
-                ProxyServer.getInstance().getLogger().warning("Rank " + rankName + " of " + name + " does no longer exist. Using the default rank.");
-            }
-
-            ProxiedPlayer player = plugin.getProxy().getPlayer(uniqueID);
-
-            StaffUser user = new StaffUser(uniqueID, rank);
-
-            if (player != null) {
-                if (Strings.isNullOrEmpty(name))
-                    name = player.getName();
-
-                if (player.isConnected()) {
-                    user.setOnline(true);
-
-                    if (player.getServer() != null)
-                        user.setServer(player.getServer().getInfo().getName());
-                }
-            }
-
-            user.setName(name);
-            user.setStaffChat(section.getBoolean(key + ".staff-chat", false));
-            user.setStaffMessages(section.getBoolean(key + ".staff-messages", plugin.getConfig().getBoolean("Defaults.Staff-Messages", false)));
-
-            addUser(user, false);
+        if (!storage.initialize()) {
+            plugin.getLogger().warning("Could not initialize staff user storage.");
+            return;
         }
-        plugin.getLogger().info("Loaded " + this.users.size() + " staff user(s)...");
+
+        storage.loadAll().thenAcceptAsync(set -> {
+            for (StaffUser user : set) {
+                users.put(user.getUniqueID(), user);
+            }
+            plugin.getLogger().info(String.format("Loaded %d user(s)...", users.size()));
+        });
     }
 
     public void save() {
-        storage.clear();
-        Configuration config = storage.getConfiguration();
-
-        for (StaffUser user : this.users.values()) {
-            String uuidString = user.getUniqueID().toString();
-            config.set(uuidString + ".name", user.getName());
-            config.set(uuidString + ".rank", user.getRank().getName());
-            config.set(uuidString + ".staff-chat", user.isStaffChat());
-            config.set(uuidString + ".staff-messages", user.isStaffMessages());
-        }
-
-        storage.save();
+        storage.saveAll(this.users.values()).thenRunAsync(() -> plugin.getLogger().info(String.format("Saved %d users.", users.size())));
     }
 
     @Nullable
     public StaffUser getUser(ProxiedPlayer player) {
-        if (player == null)
-            return null;
-        return getUser(player.getUniqueId());
+        return player == null ? null : getUser(player.getUniqueId());
     }
 
     @Nullable
@@ -108,63 +89,45 @@ public class StaffManager {
 
     @Nullable
     public StaffUser getUser(String name) {
-        return this.users.values().stream()
+        return users.values().stream()
                 .filter(u -> u.getName().equals(name))
                 .findAny().orElse(null);
     }
 
-    public void addUser(StaffUser user, boolean sync) {
-        this.users.put(user.getUniqueID(), user);
-        user.setRemote(false);
+    public void createStaffUser(StaffUser user, boolean sync) {
+        users.put(user.getUniqueID(), user);
+        storage.save(user);
 
         if (sync)
             plugin.getMessagingService().sendStaffAdd(user);
     }
 
-    public void addUser(CachedUser cachedUser, Rank rank, boolean sync) {
-        StaffUser user = new StaffUser(cachedUser.getUniqueId(), rank);
+    // Add user to staff
+    public void createStaffUser(CachedUser cachedUser, Rank rank, boolean sync) {
+        StaffUser user = new StaffUser(cachedUser.getUniqueID(), rank);
 
         user.setName(cachedUser.getName());
-        user.setServer(cachedUser.getServer());
-        user.setOnline(true);
         user.setStaffMessages(plugin.getConfig().getBoolean("Defaults.Staff-Messages", false));
 
-        addUser(user, sync);
+        createStaffUser(user, sync);
     }
 
     public void removeUser(StaffUser user, boolean sync) {
-        this.users.remove(user.getUniqueID());
+        users.remove(user.getUniqueID());
+        storage.delete(user.getUniqueID());
 
         if (sync)
             plugin.getMessagingService().sendStaffRemove(user.getName());
     }
 
     public Set<StaffUser> getUsers() {
-        return new HashSet<>(this.users.values());
+        return new HashSet<>(users.values());
     }
 
     public Set<StaffUser> getUsers(Predicate<StaffUser> condition) {
-        return this.users.values().stream()
+        return users.values().stream()
                 .filter(condition)
                 .collect(Collectors.toSet());
-    }
-
-    public void importUser(StaffUser user) {
-        // Don't override from remote, just add if missing
-        if (this.users.containsKey(user.getUniqueID())) {
-
-            // Update server if possible
-            StaffUser localUser = getUser(user.getUniqueID());
-            if (localUser != null)
-                localUser.copyUseful(user);
-            return;
-        }
-
-        addUser(user, false);
-    }
-
-    public void importUsers(Set<StaffUser> users) {
-        users.forEach(this::importUser);
     }
 
     /**
@@ -175,10 +138,10 @@ public class StaffManager {
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
 
-        if (type == MessageType.STAFF)
+        if (type == MessageType.STAFF_MESSAGE)
             // To staff online
             getUsers().forEach(u -> u.sendStaffMessage(message));
-        else if (type == MessageType.PUBLIC)
+        else if (type == MessageType.PUBLIC_MESSAGE)
             // To all players online
             plugin.getProxy().getPlayers().forEach(p -> TextUtil.sendMessage(p, message));
 
@@ -186,9 +149,9 @@ public class StaffManager {
     }
 
     /**
-     * Send message to online staff.
+     * Send message to online staff on local proxy.
      */
-    public void sendMessage(String message) {
+    public void sendStaffMessageRaw(String message) {
         // Send one to console
         TextUtil.sendMessage(plugin.getProxy().getConsole(), message);
 
@@ -196,7 +159,7 @@ public class StaffManager {
     }
 
     /**
-     * Format and send a message to staff chat.
+     * Format and send a message to staff chat on all proxies.
      */
     public void sendStaffMessage(StaffUser author, String message) {
         String wholeMessage = plugin.getMessages().getString("StaffChat-Module.StaffChat-Message")
@@ -205,6 +168,6 @@ public class StaffManager {
                 .replace("%message%", message)
                 .replace("%prefix%", plugin.getPrefix(author));
 
-        sendMessage(wholeMessage, MessageType.STAFF);
+        sendMessage(wholeMessage, MessageType.STAFF_MESSAGE);
     }
 }

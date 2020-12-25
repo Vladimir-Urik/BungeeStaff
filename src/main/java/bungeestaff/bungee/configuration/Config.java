@@ -1,6 +1,7 @@
 package bungeestaff.bungee.configuration;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
+import bungeestaff.bungee.util.TextUtil;
 import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
 
 public class Config {
 
@@ -37,18 +39,27 @@ public class Config {
         this.configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
     }
 
-    public void load() {
+    public boolean load() {
 
         if (!file.exists()) {
 
-            file.getParentFile().mkdirs();
+            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
+                return false;
+
+            InputStream in = plugin.getResourceAsStream(name);
 
             try {
-                InputStream in = plugin.getResourceAsStream(name);
-                Files.copy(in, file.toPath());
+                if (in == null) {
+                    if (!file.createNewFile()) {
+                        plugin.getProxy().getLogger().severe("Could not create file " + name);
+                        return false;
+                    }
+                } else
+                    Files.copy(in, file.toPath());
             } catch (IOException e) {
                 plugin.getProxy().getLogger().severe("Could not create file " + name);
                 e.printStackTrace();
+                return false;
             }
         }
 
@@ -57,7 +68,9 @@ public class Config {
         } catch (IOException e) {
             plugin.getProxy().getLogger().severe("Could not load " + name);
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     public void delete() {
@@ -77,11 +90,26 @@ public class Config {
         load();
     }
 
-    public void save() {
+    public boolean save() {
         try {
             configurationProvider.save(configuration, file);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+    }
+
+    /**
+     * Get line or list message.
+     */
+    public String getMessage(String key) {
+        Object obj = getConfiguration().get(key);
+        String message = null;
+        if (obj instanceof String)
+            message = (String) obj;
+        else if (obj instanceof List<?>)
+            message = String.join("\n&r", getConfiguration().getStringList(key));
+        return TextUtil.color(message);
     }
 }

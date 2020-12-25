@@ -1,7 +1,6 @@
 package bungeestaff.bungee.system.staff;
 
 import bungeestaff.bungee.BungeeStaffPlugin;
-import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.Serializable;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.util.ParseUtil;
@@ -13,6 +12,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class StaffUser implements Serializable {
@@ -33,17 +33,6 @@ public class StaffUser implements Serializable {
     @Setter
     private boolean staffMessages; // wants to see staff chat
 
-    @Getter
-    @Setter
-    private boolean online = false;
-    @Getter
-    @Setter
-    // user is synced from another proxy, don't attempt to send messages to him
-    private boolean remote = false;
-    @Getter
-    @Setter
-    private String server;
-
     public StaffUser(UUID uniqueID, Rank rank) {
         this.uniqueID = uniqueID;
         this.rank = rank;
@@ -63,13 +52,20 @@ public class StaffUser implements Serializable {
     }
 
     public void sendMessage(String message) {
-        if (!remote && online)
-            TextUtil.sendMessage(asPlayer(), message);
+        asPlayer().ifPresent(p -> TextUtil.sendMessage(p, message));
+    }
+
+    public boolean isOnline() {
+        return BungeeStaffPlugin.getInstance().getUserCache().isOnline(name);
     }
 
     @Nullable
-    public ProxiedPlayer asPlayer() {
-        return ProxyServer.getInstance().getPlayer(uniqueID);
+    public String getServer() {
+        return BungeeStaffPlugin.getInstance().getUserCache().getServer(name);
+    }
+
+    public Optional<ProxiedPlayer> asPlayer() {
+        return Optional.ofNullable(ProxyServer.getInstance().getPlayer(uniqueID));
     }
 
     @NotNull
@@ -78,17 +74,16 @@ public class StaffUser implements Serializable {
         return uniqueID.toString() + ";" +
                 name + ";" +
                 rank.getName() + ";" +
-                server + ";" +
-                online;
+                staffChat + ";" +
+                staffMessages;
     }
 
-    // uniqueID;name;rank;server;online
-    // Deserialized users are set remote to true
+    // uniqueID;name;rank;staffChat;staffMessages
     @Nullable
     public static StaffUser deserialize(BungeeStaffPlugin plugin, String input) {
         String[] arr = input.split(";");
 
-        if (arr.length < 4)
+        if (arr.length < 5)
             return null;
 
         UUID uniqueID = ParseUtil.parseUUID(arr[0]);
@@ -105,33 +100,13 @@ public class StaffUser implements Serializable {
         StaffUser user = new StaffUser(uniqueID, rank);
         if (!name.equalsIgnoreCase("null"))
             user.setName(name);
-        user.setRemote(true);
 
-        if (!arr[3].equalsIgnoreCase("null"))
-            user.setServer(arr[3]);
+        boolean staffChat = Boolean.parseBoolean(arr[3]);
+        user.setStaffChat(staffChat);
 
-        if (arr.length > 4) {
-            boolean online = Boolean.parseBoolean(arr[4]);
-            user.setOnline(online);
-        }
+        boolean staffMessages = Boolean.parseBoolean(arr[4]);
+        user.setStaffMessages(staffMessages);
 
         return user;
-    }
-
-    private void copyUseful(String server, String name) {
-        if (this.server == null && server != null)
-            this.server = server;
-        if (this.name == null && name != null)
-            this.name = name;
-    }
-
-    public void copyUseful(CachedUser user) {
-        copyUseful(user.getServer(), user.getName());
-    }
-
-    public void copyUseful(StaffUser user) {
-        copyUseful(user.getServer(), user.getName());
-        if (!online)
-            this.online = user.isOnline();
     }
 }

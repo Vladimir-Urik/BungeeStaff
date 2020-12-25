@@ -25,11 +25,8 @@ public class ConnectionListener extends EventListener {
 
         ServerInfo targetServer = event.getTarget();
 
-        // Why a return when he's already online..? some kind of back check?
         if (targetServer.getPlayers().contains(player))
             return;
-
-        user.setServer(targetServer.getName());
 
         String prefix = plugin.getPrefix(player);
 
@@ -48,6 +45,6 @@ public class ConnectionListener extends EventListener {
                     .replace("%prefix%", prefix);
         }
 
-        plugin.getStaffManager().sendMessage(message, MessageType.STAFF);
+        plugin.getStaffManager().sendMessage(message, MessageType.STAFF_MESSAGE);
     }
 }

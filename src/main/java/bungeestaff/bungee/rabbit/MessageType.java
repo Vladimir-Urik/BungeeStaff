@@ -14,12 +14,12 @@ public enum MessageType {
     //TODO Ditch mass updates and replace with single user leave&join
 
     // A staff only message (staff chat, join, leave, connect)
-    STAFF((plugin, message, serverId) -> {
-        plugin.getStaffManager().sendMessage(message);
+    STAFF_MESSAGE((plugin, message, serverId) -> {
+        plugin.getStaffManager().sendStaffMessageRaw(message);
     }),
 
     // Sending a public message (broadcast)
-    PUBLIC((plugin, message, serverId) -> {
+    PUBLIC_MESSAGE((plugin, message, serverId) -> {
         plugin.getBroadcastManager().broadcastRaw(message, false);
     }),
 
@@ -28,33 +28,14 @@ public enum MessageType {
             return;
 
         Set<CachedUser> users = ParseUtil.deserializeSet(message.trim(), CachedUser::deserialize);
-        plugin.getMessagingService().getUserCache().updateUsers(serverId, users);
-    }),
-
-    UPDATE_STAFF(((plugin, message, serverId) -> {
-        Set<StaffUser> users = ParseUtil.deserializeSet(message, str -> StaffUser.deserialize(plugin, str));
-        plugin.getStaffManager().importUsers(users);
-    })),
-
-    STAFF_JOIN((plugin, message, serverId) -> {
-        StaffUser user = plugin.getStaffManager().getUser(message.trim());
-        if (user == null)
-            return;
-        user.setOnline(true);
-    }),
-
-    STAFF_LEAVE((plugin, message, serverId) -> {
-        StaffUser user = plugin.getStaffManager().getUser(message.trim());
-        if (user == null)
-            return;
-        user.setOnline(false);
+        plugin.getUserCache().importUsers(serverId, users);
     }),
 
     STAFF_ADD((plugin, message, serverId) -> {
         StaffUser user = StaffUser.deserialize(plugin, message);
         if (user == null)
             return;
-        plugin.getStaffManager().addUser(user, false);
+        plugin.getStaffManager().createStaffUser(user, false);
     }),
 
     STAFF_REMOVE((plugin, message, serverId) -> {

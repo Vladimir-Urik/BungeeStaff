@@ -9,7 +9,7 @@ plugins {
 archivesBaseName = 'original-BungeeStaff'
 group 'bungeestaff.bungee'
 sourceCompatibility = '8'
-version '3.0.5'
+version '3.1.0-SNAPSHOT'
 
 def pluginName = 'BungeeStaff'
 def mainClass = project.property("group") + "." + pluginName + "Plugin"
@@ -17,6 +17,10 @@ def mainClass = project.property("group") + "." + pluginName + "Plugin"
 repositories {
     mavenLocal()
     mavenCentral()
+
+    maven {
+        url = 'https://ci.emc.gs/nexus/content/groups/aikar/'
+    }
 }
 
 shadowJar {
@@ -51,4 +55,6 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    compile 'com.zaxxer:HikariCP:3.1.0'
 }

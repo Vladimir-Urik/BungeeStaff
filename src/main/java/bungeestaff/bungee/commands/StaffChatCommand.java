@@ -29,7 +29,7 @@ public class StaffChatCommand extends CommandBase {
 
             if (args.length == 0) {
                 plugin.sendMessage(player, "StaffChat-Module.StaffChat-" + (user.switchStaffChat() ? "Enabled" : "Disabled"));
-                plugin.getMessagingService().sendStaffChatUpdate(user, user.isStaffChat());
+                plugin.getMessagingService().sendStaffChatToggle(user, user.isStaffChat());
                 return;
             }
         }
@@ -44,6 +44,6 @@ public class StaffChatCommand extends CommandBase {
                 .replace("%rank%", player == null ? "System" : user.getRank().getName())
                 .replace("%message%", message.toString());
 
-        plugin.getStaffManager().sendMessage(wholeMessage, MessageType.STAFF);
+        plugin.getStaffManager().sendMessage(wholeMessage, MessageType.STAFF_MESSAGE);
     }
 }
