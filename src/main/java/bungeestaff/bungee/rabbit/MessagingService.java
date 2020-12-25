@@ -125,6 +125,11 @@ public class MessagingService {
                 if (result == null)
                     return;
 
+                if (result.getKey() == null) {
+                    plugin.getLogger().warning("Received an unknown message type from " + message);
+                    return;
+                }
+
                 MessageType type = result.getKey();
                 String serverId = result.getValue();
 
