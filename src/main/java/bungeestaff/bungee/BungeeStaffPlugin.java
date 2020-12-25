@@ -88,6 +88,7 @@ public class BungeeStaffPlugin extends Plugin {
         }
 
         registerCommands();
+        staffManager.startAutoSave();
         TextUtil.sendMessage(console, "&8&m                        ");
     }
 
@@ -129,11 +130,15 @@ public class BungeeStaffPlugin extends Plugin {
         broadcastManager.load();
         rankManager.load();
 
+        staffManager.reloadAutoSave();
+
         TextUtil.sendMessage(sender, messages.getMessage("BungeeStaff-Module.Reload")
                 .replace("%time%", String.valueOf(System.currentTimeMillis() - start)));
     }
 
     public void onDisable() {
+        staffManager.stopAutoSave();
+
         staffManager.save();
         messagingService.close();
 

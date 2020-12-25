@@ -23,6 +23,12 @@ Defaults:
 # ( this is only used if you delete the default rank against my notes ;) )
 No-Rank: '&7'
 
+# Auto save settings
+auto-save:
+  enabled: true
+  # Interval in seconds
+  interval: 60
+
 storage:
   # Staff users won't be synced properly when yml is used.
   # yml/mysql

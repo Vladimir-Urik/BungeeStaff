@@ -6,11 +6,15 @@ import bungeestaff.bungee.rabbit.cache.CachedUser;
 import bungeestaff.bungee.system.rank.Rank;
 import bungeestaff.bungee.system.storage.IStaffStorage;
 import bungeestaff.bungee.util.TextUtil;
+import lombok.Getter;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -20,11 +24,39 @@ public class StaffManager {
 
     private final Map<UUID, StaffUser> users = new HashMap<>();
 
+    @Getter
     private final IStaffStorage storage;
+
+    private ScheduledTask autoSave;
 
     public StaffManager(BungeeStaffPlugin plugin, IStaffStorage storage) {
         this.plugin = plugin;
         this.storage = storage;
+    }
+
+    public void stopAutoSave() {
+        if (autoSave == null)
+            return;
+
+        autoSave.cancel();
+        this.autoSave = null;
+    }
+
+    public void startAutoSave() {
+        if (autoSave != null)
+            stopAutoSave();
+
+        int interval = plugin.getConfig().getInt("auto-save.interval", 60);
+
+        this.autoSave = ProxyServer.getInstance().getScheduler().schedule(plugin, this::save, interval, interval, TimeUnit.SECONDS);
+        plugin.getLogger().info(String.format("Started auto save with an interval of %d seconds.", interval));
+    }
+
+    public void reloadAutoSave() {
+        stopAutoSave();
+
+        if (plugin.getConfig().getBoolean("auto-save.enabled", false))
+            startAutoSave();
     }
 
     public void load() {
