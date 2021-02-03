@@ -9,7 +9,7 @@ plugins {
 archivesBaseName = 'original-BungeeStaff'
 group 'bungeestaff.bungee'
 sourceCompatibility = '8'
-version '3.1.1'
+version '3.1.2'
 
 def pluginName = 'BungeeStaff'
 def mainClass = project.property("group") + "." + pluginName + "Plugin"
@@ -27,7 +27,9 @@ shadowJar {
     archiveBaseName.set(pluginName)
     archiveClassifier.set('')
     archiveVersion.set(project.property("version").toString())
-    relocate('com.rabbitmq', project.property("group").toString() + ".rabbit")
+    relocate('com.rabbitmq', project.property("group").toString() + "lib.rabbit")
+    relocate('com.zaxxer', project.property("group").toString() + "lib.hikaricp")
+    relocate('org.slf4j', project.property("group").toString() + "lib.slf4j")
 }
 
 processResources {
@@ -47,14 +49,14 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-    compile 'org.jetbrains:annotations:19.0.0'
-
-    compileOnly 'net.md-5:bungeecord-api:1.16-R0.3'
+    compile 'org.jetbrains:annotations:20.1.0'
 
     compile 'com.rabbitmq:amqp-client:5.10.0'
 
+    compile 'com.zaxxer:HikariCP:4.0.1'
+
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.4'
+
     compileOnly 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
-
-    compile 'com.zaxxer:HikariCP:3.1.0'
 }
